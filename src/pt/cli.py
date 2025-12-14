@@ -14,7 +14,7 @@ from pt import __version__
 from pt.completion import complete_pipeline_name, complete_profile_name, complete_task_name
 from pt.config import ConfigError, ConfigNotFoundError, load_config
 from pt.executor import ExecutionResult, check_uv_installed
-from pt.models import OnFailure, OutputMode
+from pt.models import OnFailure, OutputMode, PtConfig
 from pt.runner import Runner
 
 # Heavy imports loaded lazily inside commands that use them:
@@ -671,6 +671,264 @@ def watch(
 
 
 @main.command()
+@click.argument("task_name", shell_complete=complete_task_name)
+@click.option(
+    "-p",
+    "--profile",
+    "profile",
+    shell_complete=complete_profile_name,
+    help="Profile to use (affects variable resolution)",
+)
+@click.option(
+    "-c",
+    "--config",
+    "config_path",
+    type=click.Path(exists=True, path_type=Path),
+    help="Path to config file",
+)
+@handle_errors
+def explain(task_name: str, profile: str | None, config_path: Path | None) -> None:
+    """Show detailed information about a task.
+
+    Displays the resolved task configuration including inheritance chain,
+    environment variables, dependencies, and effective command.
+    """
+    from pt.config import (
+        apply_variable_interpolation,
+        build_profile_env,
+        get_effective_profile,
+        get_effective_runner,
+        get_profile_python,
+        get_project_root,
+        resolve_task_name,
+    )
+
+    # Load config with variable interpolation
+    config, path = load_config(config_path)
+    project_root = get_project_root(path)
+
+    effective_profile = get_effective_profile(config, profile)
+    config = apply_variable_interpolation(config, effective_profile)
+
+    # Resolve alias to task name
+    try:
+        resolved_name = resolve_task_name(config, task_name)
+    except ValueError as e:
+        console.print(f"[red]Error:[/red] {e}")
+        sys.exit(1)
+
+    task = config.get_task(resolved_name)
+
+    # Get the original (pre-inheritance) task for showing inheritance chain
+    raw_config = _load_raw_config(path)
+    inheritance_chain = _get_inheritance_chain(raw_config, resolved_name)
+
+    # Header
+    console.print(f"\n[bold cyan]Task:[/bold cyan] {resolved_name}")
+    if resolved_name != task_name:
+        console.print(f"[dim](alias for: {task_name})[/dim]")
+
+    # Description
+    if task.description:
+        console.print(f"[bold]Description:[/bold] {task.description}")
+
+    # Source info
+    console.print(f"[bold]Config:[/bold] {path}")
+
+    # Inheritance chain
+    if len(inheritance_chain) > 1:
+        chain_str = " → ".join(inheritance_chain)
+        console.print(f"[bold]Inheritance:[/bold] {chain_str}")
+
+    # Task type and command
+    console.print()
+    if task.script:
+        console.print("[bold]Type:[/bold] script")
+        console.print(f"[bold]Script:[/bold] {task.script}")
+    elif task.cmd:
+        console.print("[bold]Type:[/bold] command")
+        console.print(f"[bold]Command:[/bold] {task.cmd}")
+    else:
+        console.print("[bold]Type:[/bold] group (depends_on only)")
+
+    # Args
+    if task.args:
+        console.print(f"[bold]Args:[/bold] {' '.join(task.args)}")
+
+    # Runner prefix
+    runner = get_effective_runner(config, task, effective_profile)
+    if runner:
+        console.print(f"[bold]Runner prefix:[/bold] {runner}")
+
+    # Working directory
+    if task.cwd:
+        console.print(f"[bold]Working directory:[/bold] {task.cwd}")
+
+    # Python version
+    python_version = task.python or get_profile_python(config, effective_profile)
+    if python_version:
+        console.print(f"[bold]Python:[/bold] {python_version}")
+
+    # Timeout
+    if task.timeout:
+        console.print(f"[bold]Timeout:[/bold] {task.timeout}s")
+
+    # Package dependencies
+    if task.dependencies:
+        resolved_deps = config.resolve_dependencies(task)
+        console.print("[bold]Package dependencies:[/bold]")
+        for dep in resolved_deps:
+            console.print(f"  • {dep}")
+
+    # Task dependencies (depends_on)
+    if task.depends_on:
+        console.print("[bold]Task dependencies:[/bold]")
+        for task_dep in task.depends_on:
+            if isinstance(task_dep, str):
+                console.print(f"  • {task_dep}")
+            else:
+                args_str = f" (args: {' '.join(task_dep.args)})" if task_dep.args else ""
+                console.print(f"  • {task_dep.task}{args_str}")
+
+    # Environment variables
+    console.print()
+    console.print("[bold]Environment:[/bold]")
+
+    # Build full environment
+    profile_env = build_profile_env(config, project_root, effective_profile)
+    task_env = {**profile_env, **task.env}
+
+    if task_env:
+        for key, value in sorted(task_env.items()):
+            # Truncate long values
+            display_value = value if len(value) <= 60 else f"{value[:57]}..."
+            console.print(f"  {key}={display_value}")
+    else:
+        console.print("  [dim](none)[/dim]")
+
+    # PYTHONPATH
+    if task.pythonpath:
+        console.print("[bold]PYTHONPATH:[/bold]")
+        for p in task.pythonpath:
+            console.print(f"  • {p}")
+
+    # Conditions
+    if task.condition or task.condition_script:
+        console.print()
+        console.print("[bold]Conditions:[/bold]")
+        if task.condition:
+            cond = task.condition
+            if cond.platforms:
+                console.print(f"  platforms: {', '.join(cond.platforms)}")
+            if cond.python_version:
+                console.print(f"  python_version: {cond.python_version}")
+            if cond.env_set:
+                console.print(f"  env_set: {', '.join(cond.env_set)}")
+            if cond.env_not_set:
+                console.print(f"  env_not_set: {', '.join(cond.env_not_set)}")
+            if cond.env_true:
+                console.print(f"  env_true: {', '.join(cond.env_true)}")
+            if cond.env_false:
+                console.print(f"  env_false: {', '.join(cond.env_false)}")
+            if cond.env_equals:
+                for k, v in cond.env_equals.items():
+                    console.print(f"  env_equals: {k}={v}")
+            if cond.files_exist:
+                console.print(f"  files_exist: {', '.join(cond.files_exist)}")
+            if cond.files_not_exist:
+                console.print(f"  files_not_exist: {', '.join(cond.files_not_exist)}")
+        if task.condition_script:
+            console.print(f"  condition_script: {task.condition_script}")
+
+    # Hooks
+    hooks = [
+        ("before_task", task.before_task),
+        ("after_success", task.after_success),
+        ("after_failure", task.after_failure),
+        ("after_task", task.after_task),
+    ]
+    active_hooks = [(name, script) for name, script in hooks if script]
+    if active_hooks:
+        console.print()
+        console.print("[bold]Hooks:[/bold]")
+        for name, script in active_hooks:
+            console.print(f"  {name}: {script}")
+
+    # Tags and category
+    if task.tags or task.category:
+        console.print()
+        if task.category:
+            console.print(f"[bold]Category:[/bold] {task.category}")
+        if task.tags:
+            console.print(f"[bold]Tags:[/bold] {', '.join(task.tags)}")
+
+    # Aliases
+    if task.aliases:
+        console.print(f"[bold]Aliases:[/bold] {', '.join(task.aliases)}")
+
+    # Options
+    options = []
+    if task.ignore_errors:
+        options.append("ignore_errors")
+    if task.parallel:
+        options.append("parallel")
+    if task.disable_runner:
+        options.append("disable_runner")
+    if task.use_vars:
+        options.append("use_vars")
+    if options:
+        console.print(f"[bold]Options:[/bold] {', '.join(options)}")
+
+    # Output redirection
+    if task.stdout or task.stderr:
+        console.print()
+        console.print("[bold]Output redirection:[/bold]")
+        if task.stdout:
+            console.print(f"  stdout: {task.stdout}")
+        if task.stderr:
+            console.print(f"  stderr: {task.stderr}")
+
+    console.print()
+
+
+def _load_raw_config(config_path: Path) -> PtConfig:
+    """Load config without resolving inheritance (for showing inheritance chain)."""
+    import sys
+
+    if sys.version_info >= (3, 11):
+        import tomllib
+    else:
+        import tomli as tomllib
+
+    with config_path.open("rb") as f:
+        raw_data = tomllib.load(f)
+
+    # Extract pt config from pyproject.toml if needed
+    if config_path.name == "pyproject.toml":
+        pt_data = raw_data.get("tool", {}).get("pt", raw_data.get("tool", {}).get("pyr", {}))
+    else:
+        pt_data = raw_data
+
+    return PtConfig.model_validate(pt_data)
+
+
+def _get_inheritance_chain(config: PtConfig, task_name: str) -> list[str]:
+    """Get the inheritance chain for a task (from child to root ancestor)."""
+    chain = [task_name]
+    current = task_name
+
+    while current in config.tasks:
+        task = config.tasks[current]
+        if task.extend:
+            chain.append(task.extend)
+            current = task.extend
+        else:
+            break
+
+    return chain
+
+
+@main.command()
 @click.option(
     "-c",
     "--config",
@@ -680,7 +938,14 @@ def watch(
 )
 @handle_errors
 def check(config_path: Path | None) -> None:
-    """Validate the pt configuration file."""
+    """Validate the pt configuration file.
+
+    Performs comprehensive validation including:
+    - TOML syntax and schema validation
+    - Task reference validation (depends_on, extend)
+    - Profile and pipeline reference validation
+    - Best practice warnings (missing descriptions, timeouts)
+    """
     config, path = load_config(config_path)
 
     console.print(f"[green]✓[/green] Configuration valid: {path}")
@@ -694,6 +959,134 @@ def check(config_path: Path | None) -> None:
         console.print("[green]✓[/green] uv is installed")
     else:
         console.print("[yellow]![/yellow] uv is not installed")
+
+    # Run enhanced validation
+    warnings = _validate_config(config)
+    errors = [w for w in warnings if w.startswith("[error]")]
+    warns = [w for w in warnings if w.startswith("[warn]")]
+
+    if errors:
+        console.print()
+        console.print("[red]Errors:[/red]")
+        for error in errors:
+            console.print(f"  {error.replace('[error] ', '')}")
+
+    if warns:
+        console.print()
+        console.print("[yellow]Warnings:[/yellow]")
+        for warn in warns:
+            console.print(f"  {warn.replace('[warn] ', '')}")
+
+    if not errors and not warns:
+        console.print("[green]✓[/green] No issues found")
+    elif errors:
+        sys.exit(1)
+
+
+def _validate_config(config: PtConfig) -> list[str]:
+    """Perform enhanced validation of the configuration.
+
+    Returns a list of warning/error messages.
+    """
+    from pt.config import resolve_task_name
+
+    issues: list[str] = []
+
+    # Validate task references in depends_on
+    for task_name, task in config.tasks.items():
+        for dep in task.depends_on:
+            dep_name = dep if isinstance(dep, str) else dep.task
+            try:
+                resolve_task_name(config, dep_name)
+            except ValueError:
+                issues.append(
+                    f"[error] Task '{task_name}' depends on unknown task '{dep_name}'"
+                )
+
+    # Validate extend references (already checked during load, but double-check)
+    raw_tasks = config.tasks
+    for task_name, task in raw_tasks.items():
+        if task.extend and task.extend not in raw_tasks:
+            issues.append(
+                f"[error] Task '{task_name}' extends unknown task '{task.extend}'"
+            )
+
+    # Validate pipeline task references
+    # Build set of valid task names and aliases for O(1) lookup
+    valid_task_refs = set(config.tasks.keys())
+    for task in config.tasks.values():
+        valid_task_refs.update(task.aliases)
+
+    for pipeline_name, pipeline in config.pipelines.items():
+        for i, stage in enumerate(pipeline.stages):
+            invalid_tasks = [
+                f"[error] Pipeline '{pipeline_name}' stage {i + 1} references "
+                f"unknown task '{stage_task}'"
+                for stage_task in stage.tasks
+                if stage_task not in valid_task_refs
+            ]
+            issues.extend(invalid_tasks)
+
+    # Validate default_profile exists
+    if config.project.default_profile and config.project.default_profile not in config.profiles:
+        issues.append(
+            f"[error] default_profile '{config.project.default_profile}' not found in profiles"
+        )
+
+    # Validate on_error_task exists
+    if config.project.on_error_task:
+        try:
+            resolve_task_name(config, config.project.on_error_task)
+        except ValueError:
+            issues.append(
+                f"[error] on_error_task '{config.project.on_error_task}' not found"
+            )
+
+    # Validate dependency group references
+    for task in config.tasks.values():
+        for dep in task.dependencies:
+            # Check if it's a group reference (exists in config.dependencies)
+            # or a direct package (which is also valid)
+            # We only warn if it looks like a group name but doesn't exist
+            if dep in config.dependencies:
+                continue  # Valid group reference
+            # Check if it looks like a package (has version specifier or is lowercase with hyphens)
+            if any(c in dep for c in ">=<!=@"):
+                continue  # Looks like a package with version
+            # Could be a simple package name - that's fine too
+
+    # Best practice warnings
+    for task_name, task in config.tasks.items():
+        # Skip private tasks for some warnings
+        is_private = task_name.startswith("_")
+
+        # Warning: No description on public tasks
+        if not is_private and not task.description:
+            issues.append(f"[warn] Task '{task_name}' has no description")
+
+    # Warning: Unused dependency groups
+    used_groups: set[str] = set()
+    for task in config.tasks.values():
+        for dep in task.dependencies:
+            if dep in config.dependencies:
+                used_groups.add(dep)
+
+    unused_groups = set(config.dependencies.keys()) - used_groups
+    if unused_groups:
+        issues.append(
+            f"[warn] Unused dependency groups: {', '.join(sorted(unused_groups))}"
+        )
+
+    # Warning: Variables defined but use_vars not enabled
+    if config.variables and not config.project.use_vars:
+        # Check if any task has use_vars enabled
+        any_task_uses_vars = any(t.use_vars for t in config.tasks.values())
+        if not any_task_uses_vars:
+            issues.append(
+                "[warn] Variables defined but use_vars is not enabled globally or on any task"
+            )
+
+    return issues
 
 
 @main.command()

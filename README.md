@@ -851,6 +851,11 @@ pt watch test -p "**/*.py" -p "**/*.toml"  # Multiple patterns
 pt watch lint --no-clear             # Don't clear screen
 pt watch test --profile dev          # With profile
 
+# Inspect task details
+pt explain <task>           # Show resolved task configuration
+pt explain test             # View task inheritance, env, dependencies
+pt explain t --profile dev  # View with profile applied
+
 # List tasks and pipelines
 pt list                    # Public tasks only
 pt list --all              # Include private tasks (_prefix)
@@ -864,7 +869,7 @@ pt list --tag fast --tag slow --match-any  # Filter by tags (OR)
 pt tags                    # Show all tags with task counts
 
 # Validate configuration
-pt check
+pt check                   # Validate config with warnings
 
 # Initialize new config
 pt init
@@ -907,6 +912,101 @@ Available on most commands:
 - `-i, --ignore PATTERN` - Patterns to ignore
 - `--debounce SECONDS` - Debounce time (default: 0.5)
 - `--no-clear` - Don't clear screen on changes
+
+### Task Inspection (`pt explain`)
+
+The `pt explain` command shows detailed information about a task, including resolved configuration after inheritance and variable interpolation:
+
+```bash
+pt explain test
+pt explain test --profile ci
+```
+
+**Output includes:**
+
+- Task name, description, and config file location
+- **Inheritance chain** (if task extends another)
+- Type (script/command/group) and the resolved command
+- Runner prefix, working directory, Python version, timeout
+- Package dependencies (resolved from groups)
+- Task dependencies (`depends_on`)
+- Environment variables (merged from global/profile/task)
+- PYTHONPATH entries
+- Conditions (platforms, env vars, files)
+- Hooks (before_task, after_success, etc.)
+- Tags, category, and aliases
+- Options (ignore_errors, parallel, disable_runner, use_vars)
+- Output redirection settings
+
+**Example output:**
+
+```text
+Task: test-cov
+Description: Run tests with coverage
+Config: /home/user/project/pt.toml
+Inheritance: test-cov → test
+
+Type: command
+Command: pytest
+Args: --cov=src --cov-report=html
+
+Package dependencies:
+  • pytest
+  • pytest-cov
+
+Environment:
+  DEBUG=1
+  PYTHONPATH=src:tests
+
+Tags: ci, testing
+Aliases: tc
+```
+
+### Configuration Validation (`pt check`)
+
+The `pt check` command validates your configuration file and reports errors and warnings:
+
+```bash
+pt check
+pt check -c custom.toml
+```
+
+**Validation includes:**
+
+| Check | Type | Description |
+|-------|------|-------------|
+| Task references in `depends_on` | Error | Tasks must exist or be valid aliases |
+| Task references in `extend` | Error | Parent tasks must exist |
+| Pipeline task references | Error | All tasks in pipeline stages must exist |
+| `default_profile` reference | Error | Profile must be defined |
+| `on_error_task` reference | Error | Error handler task must exist |
+| Missing task descriptions | Warning | Public tasks should have descriptions |
+| Unused dependency groups | Warning | Defined groups not used by any task |
+| Variables without `use_vars` | Warning | Variables defined but not enabled |
+
+**Example output:**
+
+```text
+✓ Configuration valid: /home/user/project/pt.toml
+  Project: my-project
+  Tasks: 15
+  Pipelines: 2
+  Dependency groups: 3
+✓ uv is installed
+
+Errors:
+  Task 'deploy' depends on unknown task 'buld'
+  Pipeline 'ci' stage 2 references unknown task 'tset'
+
+Warnings:
+  Task 'format' has no description
+  Unused dependency groups: old-deps
+```
+
+**Exit codes:**
+
+- `0` - Configuration valid (warnings only)
+- `1` - Configuration has errors
 
 ### Environment Variables
 
