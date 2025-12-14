@@ -1,0 +1,47 @@
+[project]
+name = "test-project"
+python = "3.11"
+
+[env]
+PYTHONPATH = ["src", "lib"]
+DEBUG = "1"
+
+[dependencies]
+common = ["requests", "pydantic>=2.0"]
+testing = ["pytest", "pytest-cov"]
+
+[tasks.hello]
+description = "Print hello world"
+cmd = "python -c 'print(\"Hello, World!\")'"
+
+[tasks.greet]
+description = "Run greeting script"
+script = "scripts/greet.py"
+dependencies = ["common"]
+args = ["--name", "pyr"]
+
+[tasks.lint]
+description = "Run linting"
+cmd = "ruff check src/"
+dependencies = ["ruff"]
+
+[tasks.test]
+description = "Run tests"
+cmd = "pytest"
+dependencies = ["testing"]
+pythonpath = ["src", "tests"]
+env = { TESTING = "1" }
+
+[tasks.check]
+description = "Run all checks"
+depends_on = ["lint", "test"]
+parallel = true
+
+[pipelines.ci]
+description = "CI pipeline"
+on_failure = "wait"
+output = "buffered"
+stages = [
+    { tasks = ["lint"], parallel = false },
+    { tasks = ["test"], parallel = false },
+]

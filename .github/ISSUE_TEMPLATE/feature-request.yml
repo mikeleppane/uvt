@@ -1,0 +1,100 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for pt
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please provide as much detail as possible to help us understand your request.
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What use case does it address?
+      placeholder: |
+        Currently, pt doesn't support... which makes it difficult to...
+        This would help when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: How should this feature work? Describe your ideal solution.
+      placeholder: |
+        I propose adding a new configuration option that...
+        The CLI could have a command like...
+    validations:
+      required: true
+
+  - type: textarea
+    id: example-config
+    attributes:
+      label: Example Configuration
+      description: If applicable, show what the desired `pt.toml` configuration or CLI usage would look like
+      placeholder: |
+        [tasks.example]
+        script = "..."
+        new_feature = true
+      render: toml
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: |
+        I considered using... but it has the limitation of...
+        Another approach might be... but...
+    validations:
+      required: false
+
+  - type: textarea
+    id: use-cases
+    attributes:
+      label: Use Cases
+      description: Describe real-world scenarios where this feature would be useful
+      placeholder: |
+        - Running integration tests that require...
+        - Managing different environments for...
+        - Automating deployment workflows where...
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to your workflow?
+      options:
+        - Nice to have - Would improve my workflow but I have workarounds
+        - Significant improvement - Would meaningfully enhance productivity
+        - Critical - Blocking or severely limiting current usage
+    validations:
+      required: true
+
+  - type: dropdown
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Are you willing to contribute to this feature?
+      options:
+        - I can implement this feature and submit a PR
+        - I can test this feature once implemented
+        - I can provide additional details and feedback
+        - I prefer to just submit the idea
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or examples about the feature request
+    validations:
+      required: false

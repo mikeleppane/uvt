@@ -1,0 +1,145 @@
+name: Bug Report
+description: Report a bug or unexpected behavior in pt
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the information below to help us diagnose and fix the issue.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What went wrong? Please provide a clear and concise description of the bug.
+      placeholder: |
+        Example: "pt run test" fails with a KeyError when using task inheritance with profiles
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this bug? Please provide detailed steps.
+      placeholder: |
+        1. Create a pt.toml with...
+        2. Run 'pt run ...'
+        3. Observe error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: The task should execute successfully and...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Instead, I got an error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: pt-config
+    attributes:
+      label: pt Configuration
+      description: Please provide the relevant portion of your `pt.toml` file
+      placeholder: |
+        [tasks.test]
+        script = "pytest tests/"
+        dependencies = ["..."]
+      render: toml
+    validations:
+      required: false
+
+  - type: textarea
+    id: error-logs
+    attributes:
+      label: Error Messages / Logs
+      description: Please paste the full error message or log output
+      placeholder: |
+        Traceback (most recent call last):
+          File ...
+      render: shell
+    validations:
+      required: false
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: Which operating system are you using?
+      options:
+        - Linux (Ubuntu/Debian)
+        - Linux (Fedora/RHEL/CentOS)
+        - Linux (Arch)
+        - Linux (Other)
+        - macOS (Intel)
+        - macOS (Apple Silicon)
+        - Windows (WSL2)
+        - Windows (Native)
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: python-version
+    attributes:
+      label: Python Version
+      description: Which version of Python are you using?
+      options:
+        - "3.13"
+        - "3.12"
+        - "3.11"
+        - "3.10"
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: pt-version
+    attributes:
+      label: pt Version
+      description: Which version of pt are you using? (run `pt --version` or `python -m pt --version`)
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: uv-version
+    attributes:
+      label: uv Version
+      description: Which version of uv are you using? (run `uv --version`)
+      placeholder: "0.5.0"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here (e.g., specific environment variables, shell type, etc.)
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: verification
+    attributes:
+      label: Verification
+      description: Before submitting, please verify the following
+      options:
+        - label: I have searched existing issues to ensure this bug hasn't been reported before
+          required: true
+        - label: I have reviewed the documentation (README.md and CLAUDE.md)
+          required: true
+        - label: I am using a supported Python version (3.10+)
+          required: true

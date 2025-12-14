@@ -1,0 +1,132 @@
+[project]
+name = "pt"
+version = "0.1.0"
+description = "A modern Python task runner built for uv with profiles, inheritance, and PEP 723 support"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "mikelep", email = "mleppan23@gmail.com" }]
+keywords = [
+    "python",
+    "task",
+    "runner",
+    "uv",
+    "automation",
+    "workflow",
+    "build-tool",
+    "task-orchestration",
+    "developer-tools",
+    "cli",
+    "task-runner",
+    "build-automation",
+    "devops",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "click>=8.0",
+    "pydantic>=2.0",
+    "tomli>=2.0; python_version < '3.11'",
+    "rich>=13.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/mikeleppane/pt"
+Repository = "https://github.com/mikeleppane/pt"
+Documentation = "https://github.com/mikeleppane/pt#readme"
+"Issue Tracker" = "https://github.com/mikeleppane/pt/issues"
+Changelog = "https://github.com/mikeleppane/pt/releases"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=6.0",
+    "ruff>=0.8",
+    "mypy>=1.0",
+    "pre-commit>=3.0",
+]
+
+[project.scripts]
+pt = "pt.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pt"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "ERA",   # flake8-eradicate
+    "E",     # pycodestyle errors
+    "W",     # pycodestyle warnings
+    "F",     # pyflakes
+    "I",     # isort
+    "N",     # flake8 naming
+    "UP",    # pyupgrade
+    "B",     # flake8-bugbear
+    "C4",    # flake8-comprehensions
+    "ARG",   # flake8-unused-arguments
+    "SIM",   # flake8-simplify
+    "TCH",   # flake8-type-checking
+    "PTH",   # flake8-use-pathlib
+    "RUF",   # ruff-specific rules
+    "PERF",  # flake8-performance
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "PLR0913", # Too many arguments
+    "PLR2004", # Magic value used in comparison
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pt"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_reexport = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+extra_checks = true
+plugins = ['pydantic.mypy']
+
+# Allow some flexibility for dependencies
+[[tool.mypy.overrides]]
+module = [
+    "tomli.*",
+    "click.*",
+    "rich.*",
+]
+ignore_missing_imports = true

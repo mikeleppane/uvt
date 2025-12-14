@@ -1,0 +1,38 @@
+name: Pre-commit Auto-update
+
+on:
+  schedule:
+    - cron: '0 0 * * 1'  # Weekly on Monday at midnight
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  auto-update:
+    name: Auto-update pre-commit hooks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pre-commit
+        run: pip install pre-commit
+
+      - name: Run pre-commit autoupdate
+        run: pre-commit autoupdate
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update pre-commit hooks'
+          title: 'chore: Update pre-commit hooks'
+          body: |
+            Auto-generated PR to update pre-commit hook versions.
+
+            Please review the changes and merge if tests pass.
+          branch: pre-commit-autoupdate
+          delete-branch: true

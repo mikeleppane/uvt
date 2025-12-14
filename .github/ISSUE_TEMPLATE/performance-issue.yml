@@ -1,0 +1,148 @@
+name: Performance Issue
+description: Report slow task execution, parallel processing bottlenecks, or other performance problems
+title: "[Performance]: "
+labels: ["performance", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a performance issue! Please provide detailed information to help us investigate and optimize.
+
+  - type: textarea
+    id: problem-description
+    attributes:
+      label: Problem Description
+      description: What performance issue are you experiencing?
+      placeholder: |
+        Task execution is taking significantly longer than expected...
+        Parallel task execution seems slower than sequential...
+        Watch mode has noticeable lag when files change...
+    validations:
+      required: true
+
+  - type: textarea
+    id: scenario-details
+    attributes:
+      label: Scenario Details
+      description: Describe the scenario where the performance issue occurs
+      placeholder: |
+        - Number of tasks: 10
+        - Number of dependencies per task: 3-5
+        - Execution mode: parallel
+        - Task types: Python scripts, shell commands
+        - File size/count (if relevant):
+    validations:
+      required: true
+
+  - type: textarea
+    id: performance-metrics
+    attributes:
+      label: Performance Metrics
+      description: Please provide concrete measurements (execution time, CPU usage, memory consumption)
+      placeholder: |
+        - Execution time: 45 seconds (expected: ~10 seconds)
+        - CPU usage: 400% (4 cores maxed out)
+        - Memory usage: 2GB
+        - Measured using: time command / htop / py-spy
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-operation
+    attributes:
+      label: Affected Operation
+      description: Which pt operation is experiencing performance issues?
+      options:
+        - Task execution (running tasks)
+        - Dependency resolution (building task graph)
+        - Parallel execution (concurrent tasks)
+        - Watch mode (file watching and auto-rerun)
+        - Configuration loading (parsing pt.toml)
+        - PEP 723 script execution
+        - Hook execution
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: pt-config
+    attributes:
+      label: pt Configuration
+      description: Please provide the relevant portion of your `pt.toml` file
+      placeholder: |
+        [tasks.slow-task]
+        script = "heavy_script.py"
+        dependencies = ["dep1", "dep2", "dep3"]
+      render: toml
+    validations:
+      required: false
+
+  - type: textarea
+    id: profiling-data
+    attributes:
+      label: Profiling Data
+      description: If available, provide Python profiler output (cProfile, py-spy, etc.)
+      placeholder: |
+        Run with: python -m cProfile -o profile.txt -m pt run task
+        Or: py-spy record -o profile.svg -- python -m pt run task
+      render: shell
+    validations:
+      required: false
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: Which operating system are you using?
+      options:
+        - Linux (Ubuntu/Debian)
+        - Linux (Fedora/RHEL/CentOS)
+        - Linux (Arch)
+        - Linux (Other)
+        - macOS (Intel)
+        - macOS (Apple Silicon)
+        - Windows (WSL2)
+        - Windows (Native)
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: python-version
+    attributes:
+      label: Python Version
+      description: Which version of Python are you using?
+      options:
+        - "3.13"
+        - "3.12"
+        - "3.11"
+        - "3.10"
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: pt-version
+    attributes:
+      label: pt Version
+      description: Which version of pt are you using? (run `pt --version`)
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: uv-version
+    attributes:
+      label: uv Version
+      description: Which version of uv are you using? (run `uv --version`)
+      placeholder: "0.5.0"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the performance issue (hardware specs, disk type, network conditions, etc.)
+    validations:
+      required: false

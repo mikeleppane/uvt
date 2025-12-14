@@ -1,0 +1,70 @@
+name: Question
+description: Ask a question about using pt
+title: "[Question]: "
+labels: ["question", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about using pt? We're here to help!
+
+        **Before submitting**, please:
+        - Check the [README.md](https://github.com/mikeleppane/pt#readme) for usage examples
+        - Review [CLAUDE.md](https://github.com/mikeleppane/pt/blob/main/CLAUDE.md) for technical details
+        - Search [existing issues](https://github.com/mikeleppane/pt/issues) and [discussions](https://github.com/mikeleppane/pt/discussions)
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What area does your question relate to?
+      options:
+        - Installation and Setup
+        - Configuration (pt.toml syntax)
+        - Task Inheritance (extending tasks)
+        - Profiles and Environments (.env files, profile switching)
+        - PEP 723 Scripts (inline script dependencies)
+        - Hooks and Conditions (before_task, after_task, conditional execution)
+        - Task Dependencies (dependency graphs, execution order)
+        - Parallel Execution (running tasks concurrently)
+        - CLI Usage (commands and options)
+        - Watch Mode (auto-rerun on file changes)
+        - Development and Contributing
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: Please ask your question as clearly as possible
+      placeholder: |
+        How do I configure pt to...?
+        What's the difference between...?
+        Is it possible to...?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide any relevant context, such as your pt.toml configuration or what you've already tried
+      placeholder: |
+        I'm trying to set up a task that...
+        I've tried configuring it like this:
+
+        [tasks.example]
+        script = "..."
+      render: toml
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: Any other information that might help us answer your question
+    validations:
+      required: false
