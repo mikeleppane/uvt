@@ -1018,66 +1018,6 @@ pt run process
 pt pipeline production --profile prod
 ```
 
-## Why pt?
-
-### vs Make / Just
-
-- ✅ **Python-native**: TOML config instead of Makefile syntax
-- ✅ **Automatic dependency isolation**: No manual venv management
-- ✅ **PYTHONPATH handling**: Built-in path management
-- ✅ **Task inheritance**: Reduce config duplication
-- ✅ **Profiles**: Environment-specific configs without shell scripting
-
-### vs Taskipy / Poe the Poet
-
-- ✅ **Not tied to Poetry**: Works with any Python project
-- ✅ **Advanced features**: Profiles, inheritance, conditions, watch mode
-- ✅ **Better .env support**: Profile-specific env files
-- ✅ **Parallel execution**: Built-in task parallelization
-- ✅ **PEP 723 support**: Inline script metadata
-
-### vs Invoke
-
-- ✅ **Config-based**: TOML instead of Python code
-- ✅ **Easier onboarding**: No Python knowledge needed for basic tasks
-- ✅ **Built on uv**: Faster dependency resolution
-- ✅ **Task inheritance**: Less boilerplate
-
-### When to use pt
-
-**Perfect for:**
-
-- ✅ Projects already using or migrating to `uv`
-- ✅ Teams wanting environment-specific configurations (dev/ci/prod)
-- ✅ Replacing Makefiles with Python-native tooling
-- ✅ Projects with multiple Python scripts needing different dependencies
-- ✅ CI/CD pipelines requiring flexible task orchestration
-
-**Maybe not ideal for:**
-
-- ❌ Projects not using `uv` (requires installation)
-- ❌ Simple single-script projects (might be overkill)
-- ❌ Teams deeply invested in existing task runners
-
-## Comparison with Similar Tools
-
-| Feature | pt | Taskipy | Poe | Invoke | Make |
-|---------|-----|---------|-----|--------|------|
-| Config format | TOML | TOML | TOML | Python | Makefile |
-| Profiles | ✅ | ❌ | ❌ | 🟡 | ❌ |
-| Task inheritance | ✅ | ❌ | ❌ | 🟡 | ❌ |
-| .env files | ✅ | ❌ | 🟡 | ❌ | ❌ |
-| Watch mode | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Parallel execution | ✅ | ❌ | 🟡 | ✅ | ✅ |
-| PEP 723 support | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Conditions | ✅ | ❌ | ❌ | 🟡 | ❌ |
-| Aliases | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Dependency isolation | ✅ | 🟡 | 🟡 | ❌ | ❌ |
-| Poetry required | ❌ | ✅ | ✅ | ❌ | ❌ |
-| uv required | ✅ | ❌ | ❌ | ❌ | ❌ |
-
-🟡 = Partial support
-
 ## Shell Completion
 
 pt supports tab completion for Bash, Zsh, and Fish shells. Completions are context-aware and dynamically load task names, profile names, and pipeline names from your `pt.toml`.
