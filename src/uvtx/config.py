@@ -8,7 +8,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from uvr.models import TaskConfig, UvrConfig
+from uvtx.models import TaskConfig, UvrConfig
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -33,7 +33,7 @@ def find_config_file(start_dir: Path | None = None) -> Path:
     """Find the pt config file by walking up the directory tree.
 
     Searches for:
-    1. uvr.toml (preferred)
+    1. uvt.toml (preferred)
     2. pyproject.toml with [tool.pt] section
 
     Args:
@@ -51,8 +51,8 @@ def find_config_file(start_dir: Path | None = None) -> Path:
     current = start_dir.resolve()
 
     while True:
-        # Check for uvr.toml first
-        pt_toml = current / "uvr.toml"
+        # Check for uvt.toml first
+        pt_toml = current / "uvt.toml"
         if pt_toml.is_file():
             return pt_toml
 
@@ -70,7 +70,7 @@ def find_config_file(start_dir: Path | None = None) -> Path:
 
     msg = (
         f"No pt configuration found. "
-        f"Create a uvr.toml or add [tool.pt] to pyproject.toml. "
+        f"Create a uvt.toml or add [tool.pt] to pyproject.toml. "
         f"Searched from: {start_dir}"
     )
     raise ConfigNotFoundError(msg)
@@ -249,7 +249,7 @@ def _merge_task_configs(parent: TaskConfig, child: TaskConfig) -> TaskConfig:
     - Merge args (parent + child)
     - Merge dicts (child overrides parent): env
     """
-    from uvr.models import TaskConfig
+    from uvtx.models import TaskConfig
 
     # Start with parent values, override with child where child has values
     merged_data: dict[str, Any] = {}
@@ -446,7 +446,7 @@ def build_profile_env(
     Returns:
         Merged environment dictionary.
     """
-    from uvr.dotenv import load_env_files
+    from uvtx.dotenv import load_env_files
 
     result: dict[str, str] = {}
 
@@ -604,7 +604,7 @@ def apply_variable_interpolation(
     Returns:
         New config with interpolated task values
     """
-    from uvr.variables import interpolate_task_fields, merge_variables
+    from uvtx.variables import interpolate_task_fields, merge_variables
 
     # Merge global and profile variables
     profile = config.get_profile(profile_name)

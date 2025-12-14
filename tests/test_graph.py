@@ -2,13 +2,13 @@
 
 import pytest
 
-from uvr.graph import (
+from uvtx.graph import (
     CycleError,
     TaskGraph,
     UnknownTaskError,
     build_task_graph,
 )
-from uvr.models import TaskConfig, UvrConfig
+from uvtx.models import TaskConfig, UvrConfig
 
 
 class TestTaskGraph:

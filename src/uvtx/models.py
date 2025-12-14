@@ -192,7 +192,7 @@ class ProjectConfig(BaseModel):
 
 
 class UvrConfig(BaseModel):
-    """Root configuration model for uvr.toml."""
+    """Root configuration model for uvt.toml."""
 
     model_config = ConfigDict(extra="forbid")
 

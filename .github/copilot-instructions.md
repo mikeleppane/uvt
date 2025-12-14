@@ -29,7 +29,7 @@
 
 ### Execution Flow
 
-1. **Config Loading**: Discover `uvr.toml` or `pyproject.toml` (walking up directory tree)
+1. **Config Loading**: Discover `uvt.toml` or `pyproject.toml` (walking up directory tree)
 2. **Task Resolution**: Resolve task inheritance (`extend` field), merge profile/env vars
 3. **Graph Building**: Construct DAG from `depends_on`, detect cycles
 4. **Dependency Merging**: Merge inline PEP 723 deps with task deps (deduplicate)
@@ -150,7 +150,7 @@ def test_task_inheritance(tmp_path: Path) -> None:
         extend = "base"
         dependencies = ["pytest-cov"]
     """)
-    config_path = tmp_path / "uvr.toml"
+    config_path = tmp_path / "uvt.toml"
     config_path.write_text(config_content)
     # Load and assert...
 ```

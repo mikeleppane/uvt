@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pathlib import Path
 
-from uvr.dotenv import _expand_variables, _process_escape_sequences, load_env_file, load_env_files
+from uvtx.dotenv import _expand_variables, _process_escape_sequences, load_env_file, load_env_files
 
 
 class TestProcessEscapeSequences:

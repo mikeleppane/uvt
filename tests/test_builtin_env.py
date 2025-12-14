@@ -4,13 +4,13 @@ import os
 import textwrap
 from pathlib import Path
 
-from uvr.config import load_config
-from uvr.runner import Runner, _detect_ci_environment, _get_git_info
+from uvtx.config import load_config
+from uvtx.runner import Runner, _detect_ci_environment, _get_git_info
 
 
 def test_builtin_env_essential_variables(tmp_path: Path) -> None:
     """Test that essential built-in env vars are set."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -33,7 +33,7 @@ def test_builtin_env_essential_variables(tmp_path: Path) -> None:
 
 def test_builtin_env_with_profile(tmp_path: Path) -> None:
     """Test that UVR_PROFILE is set when using a profile."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -57,7 +57,7 @@ def test_builtin_env_with_profile(tmp_path: Path) -> None:
 
 def test_builtin_env_without_profile(tmp_path: Path) -> None:
     """Test that UVR_PROFILE is not set when not using a profile."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -78,7 +78,7 @@ def test_builtin_env_without_profile(tmp_path: Path) -> None:
 
 def test_builtin_env_with_python_version(tmp_path: Path) -> None:
     """Test that UVR_PYTHON_VERSION is set from project config."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -100,7 +100,7 @@ def test_builtin_env_with_python_version(tmp_path: Path) -> None:
 
 def test_builtin_env_with_task_python_version(tmp_path: Path) -> None:
     """Test that task-level python version overrides project level."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -123,7 +123,7 @@ def test_builtin_env_with_task_python_version(tmp_path: Path) -> None:
 
 def test_builtin_env_with_tags(tmp_path: Path) -> None:
     """Test that UVR_TAGS is set and sorted."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -145,7 +145,7 @@ def test_builtin_env_with_tags(tmp_path: Path) -> None:
 
 def test_builtin_env_without_tags(tmp_path: Path) -> None:
     """Test that UVR_TAGS is not set when task has no tags."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -240,7 +240,7 @@ def test_get_git_info_returns_tuple() -> None:
 
 def test_builtin_env_integrated_into_task(tmp_path: Path) -> None:
     """Test that builtin env vars are included in task command."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -268,7 +268,7 @@ def test_builtin_env_integrated_into_task(tmp_path: Path) -> None:
 
 def test_builtin_env_does_not_override_user_env(tmp_path: Path) -> None:
     """Test that user-defined env vars can override builtin vars."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]

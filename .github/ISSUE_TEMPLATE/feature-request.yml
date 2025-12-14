@@ -34,7 +34,7 @@ body:
     id: example-config
     attributes:
       label: Example Configuration
-      description: If applicable, show what the desired `uvr.toml` configuration or CLI usage would look like
+      description: If applicable, show what the desired `uvt.toml` configuration or CLI usage would look like
       placeholder: |
         [tasks.example]
         script = "..."

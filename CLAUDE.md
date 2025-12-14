@@ -1,6 +1,6 @@
-# uvr - Python Task Runner
+# uvtx - Python Task Runner
 
-**uvr** is a modern Python task runner built on `uv` for dependency isolation and environment management. It provides task orchestration, profiles, task inheritance, PEP 723 support, variable templating, and flexible command execution.
+**uvtx** is a modern Python task runner built on `uv` for dependency isolation and environment management. It provides task orchestration, profiles, task inheritance, PEP 723 support, variable templating, and flexible command execution.
 
 ## Tech Stack
 
@@ -82,9 +82,9 @@ Implementation: `runner.py:166-222` (`_execute_hook`, `_execute_hook_async`)
 - Merge rule: `parent.tags + child.tags → unique, sorted`
 
 CLI Filtering:
-- `uvr list --tag <tag>`: Filter tasks by tag(s)
-- `uvr multi --tag <tag>`: Run tasks with tag(s)
-- `uvr tags`: List all tags with task counts
+- `uvtx list --tag <tag>`: Filter tasks by tag(s)
+- `uvtx multi --tag <tag>`: Run tasks with tag(s)
+- `uvtx tags`: List all tags with task counts
 - `--match-any`: Use OR logic instead of AND
 
 Implementation: `models.py:186,290-307`, `cli.py` (list, multi, tags commands)
@@ -175,8 +175,8 @@ Implementation: `executor.py:_prepare_output_redirect()`, `executor.py:execute_s
 Example:
 
 ```bash
-uvr run --inline "pytest tests/" --env DEBUG=1
-uvr run --inline "python deploy.py" --env STAGE=prod --cwd workspace/
+uvtx run --inline "pytest tests/" --env DEBUG=1
+uvtx run --inline "python deploy.py" --env STAGE=prod --cwd workspace/
 ```
 
 Implementation: `cli.py:_run_inline_task()`, `cli.py:run()` (command)
@@ -192,11 +192,11 @@ uv run ruff format src/ tests/    # Format code
 uv run ruff check src/ tests/     # Lint
 uv run mypy src/                  # Type check
 uv run pytest tests/              # Run tests
-uv run pytest tests/ --cov=src/uvr --cov-report=term-missing  # With coverage
+uv run pytest tests/ --cov=src/uvtx --cov-report=term-missing  # With coverage
 
-# Running uvr
-uv run uvr <command>        # Run CLI via uv
-python -m uvr <command>     # Run CLI directly
+# Running uvtx
+uv run uvtx <command>        # Run CLI via uv
+python -m uvtx <command>     # Run CLI directly
 ```
 
 ## Patterns
@@ -216,7 +216,7 @@ python -m uvr <command>     # Run CLI directly
 
 ## Recent Features (v0.1.0+)
 
-Four major features were added to enhance uvr's capabilities:
+Four major features were added to enhance uvtx's capabilities:
 
 1. **Variable Templating** - Reusable `{variable}` syntax for DRY configurations
 2. **Global Runner** - Automatic command prefixing (e.g., "dotenv run") for all tasks

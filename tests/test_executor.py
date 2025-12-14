@@ -1,6 +1,6 @@
 """Tests for pt.executor."""
 
-from uvr.executor import UvCommand
+from uvtx.executor import UvCommand
 
 
 class TestUvCommand:

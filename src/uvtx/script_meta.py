@@ -135,7 +135,7 @@ def merge_dependencies(
 
     Args:
         script_deps: Dependencies from PEP 723 inline metadata.
-        config_deps: Dependencies from uvr.toml task config.
+        config_deps: Dependencies from uvtx.toml task config.
 
     Returns:
         Merged list of dependencies with duplicates removed.

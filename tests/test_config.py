@@ -5,7 +5,7 @@ from textwrap import dedent
 
 import pytest
 
-from uvr.config import (
+from uvtx.config import (
     ConfigError,
     ConfigNotFoundError,
     build_env,
@@ -14,14 +14,14 @@ from uvr.config import (
     merge_env,
     resolve_path,
 )
-from uvr.models import UvrConfig
+from uvtx.models import UvrConfig
 
 
 class TestFindConfigFile:
     """Tests for find_config_file function."""
 
     def test_find_pt_toml(self, tmp_path: Path) -> None:
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text("[project]\nname = 'test'")
 
         result = find_config_file(tmp_path)
@@ -35,7 +35,7 @@ class TestFindConfigFile:
         assert result == config_file
 
     def test_prefer_pt_toml(self, tmp_path: Path) -> None:
-        pt_toml = tmp_path / "uvr.toml"
+        pt_toml = tmp_path / "uvt.toml"
         pt_toml.write_text("[project]")
 
         pyproject = tmp_path / "pyproject.toml"
@@ -45,7 +45,7 @@ class TestFindConfigFile:
         assert result == pt_toml
 
     def test_find_in_parent(self, tmp_path: Path) -> None:
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text("[project]")
 
         subdir = tmp_path / "subdir" / "nested"

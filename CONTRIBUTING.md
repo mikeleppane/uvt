@@ -1,4 +1,4 @@
-# Contributing to uvr
+# Contributing to uvtx
 
 Thank you for your interest in contributing! This guide will help you set up your development environment and understand our development workflow.
 
@@ -12,8 +12,8 @@ Thank you for your interest in contributing! This guide will help you set up you
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/uvr.git
-cd uvr
+git clone https://github.com/your-username/uvtx.git
+cd uvtx
 ```
 
 ### 2. Install dependencies with uv
@@ -22,7 +22,7 @@ cd uvr
 # Install all dependencies including dev tools
 uv sync --all-extras
 
-# Or install uvr in editable mode
+# Or install uvtx in editable mode
 uv pip install -e .[dev]
 ```
 
@@ -73,7 +73,7 @@ Pre-commit hooks will automatically run ruff format, ruff check, and mypy before
 uv run pytest tests/
 
 # Run with coverage
-uv run pytest tests/ --cov=src/uvr --cov-report=term-missing
+uv run pytest tests/ --cov=src/uvtx --cov-report=term-missing
 
 # Run specific test file
 uv run pytest tests/test_config.py
@@ -98,34 +98,34 @@ uv run ruff check --fix src/ tests/
 uv run mypy src/
 ```
 
-### Using uvr in Development
+### Using uvtx in Development
 
-Since uvr is installed in editable mode, you can test changes immediately:
+Since uvtx is installed in editable mode, you can test changes immediately:
 
 ```bash
-# Run uvr from the development version
-uv run uvr run <task>
+# Run uvtx from the development version
+uv run uvtx run <task>
 
 # Or activate the virtual environment
 source .venv/bin/activate
-uvr run <task>
+uvtx run <task>
 ```
 
-### Testing uvr.toml Changes
+### Testing uvtx.toml Changes
 
-You can use the uvr project itself for testing:
+You can use the uvtx project itself for testing:
 
 ```bash
-# uvr has its own uvr.toml for self-hosting
-uv run uvr list
-uv run uvr check
+# uvtx has its own uvtx.toml for self-hosting
+uv run uvtx list
+uv run uvtx check
 ```
 
 ## Project Structure
 
 ```
-uvr/
-├── src/uvr/              # Source code
+uvtx/
+├── src/uvtx/              # Source code
 │   ├── cli.py           # Click CLI commands
 │   ├── config.py        # Config loading and inheritance
 │   ├── runner.py        # Task execution orchestration
@@ -141,12 +141,12 @@ uvr/
 │   ├── test_*.py        # Test files
 │   └── fixtures/        # Test fixtures
 ├── completion/          # Shell completion scripts
-│   ├── uvr-completion.bash
-│   ├── uvr-completion.zsh
-│   └── uvr.fish
+│   ├── uvtx-completion.bash
+│   ├── uvtx-completion.zsh
+│   └── uvtx.fish
 ├── .github/workflows/   # CI/CD pipelines
 ├── pyproject.toml       # Project configuration
-├── uvr.toml              # uvr's own task definitions
+├── uvtx.toml              # uvtx's own task definitions
 └── README.md            # User documentation
 ```
 
@@ -161,7 +161,7 @@ import pytest
 
 def test_example(tmp_path: Path) -> None:
     """Test description."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvtx.toml"
     config_file.write_text(
         dedent("""
         [project]
@@ -173,7 +173,7 @@ def test_example(tmp_path: Path) -> None:
     )
 
     # Your test logic
-    from uvr.config import load_config
+    from uvtx.config import load_config
     config, path = load_config(config_file)
     assert config.project.name == "test"
 ```
@@ -229,7 +229,7 @@ Then create a Pull Request on GitHub.
 
 Releases are automated via GitHub Actions:
 
-1. Update version in `src/uvr/__init__.py`
+1. Update version in `src/uvtx/__init__.py`
 2. Update `CHANGELOG.md` (if exists)
 3. Create and push a tag:
 
@@ -264,4 +264,4 @@ git push origin v0.2.0
 - [Pydantic documentation](https://docs.pydantic.dev/)
 - [pytest documentation](https://docs.pytest.org/)
 
-Thank you for contributing to uvr!
+Thank you for contributing to uvtx!

@@ -6,7 +6,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from uvr.completion import (
+from uvtx.completion import (
     complete_pipeline_name,
     complete_profile_name,
     complete_task_name,
@@ -16,7 +16,7 @@ from uvr.completion import (
 def test_complete_task_names(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test task name completion returns task names and aliases."""
     # Create test config
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         dedent("""
         [project]
@@ -59,7 +59,7 @@ def test_complete_task_names_with_incomplete(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Test task name completion filters by incomplete string."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         dedent("""
         [project]
@@ -92,7 +92,7 @@ def test_complete_task_names_with_incomplete(
 
 def test_complete_profile_names(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test profile name completion."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         dedent("""
         [project]
@@ -124,7 +124,7 @@ def test_complete_profile_names(tmp_path: Path, monkeypatch: pytest.MonkeyPatch)
 
 def test_complete_pipeline_names(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Test pipeline name completion."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         dedent("""
         [project]
@@ -182,7 +182,7 @@ def test_complete_task_with_aliases_description(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Test that aliases show helpful descriptions."""
-    config_file = tmp_path / "uvr.toml"
+    config_file = tmp_path / "uvt.toml"
     config_file.write_text(
         dedent("""
         [project]

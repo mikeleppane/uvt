@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 from rich.console import Console
 
-from uvr.condition_evaluator import ConditionEvaluator
-from uvr.config import (
+from uvtx.condition_evaluator import ConditionEvaluator
+from uvtx.config import (
     build_profile_env,
     get_profile_python,
     get_project_root,
@@ -20,16 +20,16 @@ from uvr.config import (
     merge_env,
     resolve_path,
 )
-from uvr.executor import ExecutionResult, UvCommand, execute_async, execute_sync
-from uvr.graph import build_pipeline_graph, build_task_graph
-from uvr.models import OnFailure, OutputMode, TaskConfig, UvrConfig
-from uvr.parallel import (
+from uvtx.executor import ExecutionResult, UvCommand, execute_async, execute_sync
+from uvtx.graph import build_pipeline_graph, build_task_graph
+from uvtx.models import OnFailure, OutputMode, TaskConfig, UvrConfig
+from uvtx.parallel import (
     ParallelExecutor,
     SequentialExecutor,
     print_results_summary,
     print_task_output,
 )
-from uvr.script_meta import merge_dependencies, parse_script_metadata
+from uvtx.script_meta import merge_dependencies, parse_script_metadata
 
 
 def _detect_ci_environment() -> bool:
@@ -107,7 +107,7 @@ class Runner:
         Returns:
             Configured Runner instance.
         """
-        from uvr.config import apply_variable_interpolation, get_effective_profile
+        from uvtx.config import apply_variable_interpolation, get_effective_profile
 
         config, path = load_config(config_path)
 
@@ -180,7 +180,7 @@ class Runner:
             cwd = resolve_path(task.cwd, self.project_root)
 
         # Get effective runner
-        from uvr.config import get_effective_runner
+        from uvtx.config import get_effective_runner
 
         runner = get_effective_runner(self.config, task, self.profile)
 
@@ -310,7 +310,7 @@ class Runner:
         env = self._build_task_environment(task, extra_env=hook_extra_env)
 
         # Get effective runner for hooks (they inherit from task)
-        from uvr.config import get_effective_runner
+        from uvtx.config import get_effective_runner
 
         runner = get_effective_runner(self.config, task, self.profile)
 

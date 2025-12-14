@@ -10,12 +10,12 @@ import click
 from rich.console import Console
 from rich.table import Table
 
-from uvr import __version__
-from uvr.completion import complete_pipeline_name, complete_profile_name, complete_task_name
-from uvr.config import ConfigError, ConfigNotFoundError, load_config
-from uvr.executor import ExecutionResult, check_uv_installed
-from uvr.models import OnFailure, OutputMode, UvrConfig
-from uvr.runner import Runner
+from uvtx import __version__
+from uvtx.completion import complete_pipeline_name, complete_profile_name, complete_task_name
+from uvtx.config import ConfigError, ConfigNotFoundError, load_config
+from uvtx.executor import ExecutionResult, check_uv_installed
+from uvtx.models import OnFailure, OutputMode, UvrConfig
+from uvtx.runner import Runner
 
 # Heavy imports loaded lazily inside commands that use them:
 # - pt.watch (only for watch command)
@@ -88,15 +88,15 @@ def _run_inline_task(
     Returns:
         ExecutionResult from execution
     """
-    from uvr.config import (
+    from uvtx.config import (
         ConfigNotFoundError,
         build_profile_env,
         get_effective_runner,
         get_project_root,
         load_config,
     )
-    from uvr.executor import UvCommand, execute_sync
-    from uvr.models import TaskConfig
+    from uvtx.executor import UvCommand, execute_sync
+    from uvtx.models import TaskConfig
 
     # Parse environment variables
     parsed_env: dict[str, str] = {}
@@ -147,7 +147,7 @@ def _run_inline_task(
     # Determine Python version
     effective_python = python_version
     if not effective_python and config:
-        from uvr.config import get_profile_python
+        from uvtx.config import get_profile_python
 
         effective_python = get_profile_python(config, profile)
 
@@ -168,7 +168,7 @@ def _run_inline_task(
     result = execute_sync(command, capture_output=not verbose, timeout=timeout)
 
     if verbose or not result.success:
-        from uvr.parallel import print_task_output
+        from uvtx.parallel import print_task_output
 
         print_task_output("inline", result, console)
 
@@ -240,7 +240,7 @@ def run(
     timeout: int | None,
     python_version: str | None,
 ) -> None:
-    """Run a task defined in uvr.toml or inline.
+    """Run a task defined in uvt.toml or inline.
 
     TASK_NAME is the name of the task to run (not needed with --inline).
     Additional ARGS are passed to the task's script/command.
@@ -279,7 +279,7 @@ def run(
     runner = Runner.from_config_file(config_path, verbose=verbose, profile=profile)
 
     # Resolve alias to task name
-    from uvr.config import resolve_task_name
+    from uvtx.config import resolve_task_name
 
     try:
         resolved_task_name = resolve_task_name(runner.config, task_name)
@@ -320,7 +320,7 @@ def exec_script(
     Additional ARGS are passed to the script.
 
     The script will inherit global environment variables and PYTHONPATH
-    from uvr.toml, and can use PEP 723 inline metadata for dependencies.
+    from uvtx.toml, and can use PEP 723 inline metadata for dependencies.
     """
     if not check_uv_installed():
         print_uv_not_installed_error()
@@ -417,7 +417,7 @@ def multi(
             sys.exit(0)
     elif task_names:
         # Run tasks by name - resolve aliases
-        from uvr.config import resolve_task_name
+        from uvtx.config import resolve_task_name
 
         # Resolve all task names/aliases upfront
         try:
@@ -467,7 +467,7 @@ def multi(
 def pipeline(
     pipeline_name: str, verbose: bool, profile: str | None, config_path: Path | None
 ) -> None:
-    """Run a pipeline defined in uvr.toml.
+    """Run a pipeline defined in uvt.toml.
 
     PIPELINE_NAME is the name of the pipeline to run.
     """
@@ -652,7 +652,7 @@ def watch(
     Additional ARGS are passed to the task's script/command.
     """
     # Lazy import - only load watch module when needed
-    from uvr.watch import WatchConfig, watch_and_run_sync
+    from uvtx.watch import WatchConfig, watch_and_run_sync
 
     if not check_uv_installed():
         print_uv_not_installed_error()
@@ -693,7 +693,7 @@ def explain(task_name: str, profile: str | None, config_path: Path | None) -> No
     Displays the resolved task configuration including inheritance chain,
     environment variables, dependencies, and effective command.
     """
-    from uvr.config import (
+    from uvtx.config import (
         apply_variable_interpolation,
         build_profile_env,
         get_effective_profile,
@@ -988,7 +988,7 @@ def _validate_config(config: UvrConfig) -> list[str]:
 
     Returns a list of warning/error messages.
     """
-    from uvr.config import resolve_task_name
+    from uvtx.config import resolve_task_name
 
     issues: list[str] = []
 
@@ -1085,8 +1085,8 @@ def _validate_config(config: UvrConfig) -> list[str]:
 @click.option("-f", "--force", is_flag=True, help="Overwrite existing config file")
 @handle_errors
 def init(force: bool) -> None:
-    """Initialize a new uvr.toml configuration file."""
-    config_path = Path.cwd() / "uvr.toml"
+    """Initialize a new uvt.toml configuration file."""
+    config_path = Path.cwd() / "uvt.toml"
 
     if config_path.exists() and not force:
         console.print(f"[yellow]Config file already exists:[/yellow] {config_path}")

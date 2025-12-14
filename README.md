@@ -1,17 +1,17 @@
-# uvr
+# uvtx
 
-[![CI](https://github.com/mikeleppane/uvr/workflows/CI/badge.svg)](https://github.com/mikeleppane/uvr/actions)
-[![PyPI](https://img.shields.io/pypi/v/uvr.svg)](https://pypi.org/project/uvr/)
-[![Python](https://img.shields.io/pypi/pyversions/uvr.svg)](https://pypi.org/project/uvr/)
-[![License](https://img.shields.io/pypi/l/uvr.svg)](https://github.com/mikeleppane/uvr/blob/main/LICENSE)
-[![codecov](https://codecov.io/gh/mikeleppane/uvr/branch/main/graph/badge.svg)](https://codecov.io/gh/mikeleppane/uvr)
+[![CI](https://github.com/mikeleppane/uvtxx/workflows/CI/badge.svg)](https://github.com/mikeleppane/uvtxx/actions)
+[![PyPI](https://img.shields.io/pypi/v/uvtx.svg)](https://pypi.org/project/uvtx/)
+[![Python](https://img.shields.io/pypi/pyversions/uvtx.svg)](https://pypi.org/project/uvtx/)
+[![License](https://img.shields.io/pypi/l/uvtx.svg)](https://github.com/mikeleppane/uvtxx/blob/main/LICENSE)
+[![codecov](https://codecov.io/gh/mikeleppane/uvtx/branch/main/graph/badge.svg)](https://codecov.io/gh/mikeleppane/uvtx)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Type checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](https://mypy-lang.org/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 
 **A modern Python task runner built for the [uv](https://docs.astral.sh/uv/) era.**
 
-uvr solves the common pain points of running Python scripts:
+uvtx solves the common pain points of running Python scripts:
 
 - ✅ **No virtual environment activation** - `uv` handles it automatically
 - ✅ **No PYTHONPATH headaches** - configure once, use everywhere
@@ -43,7 +43,7 @@ uvr solves the common pain points of running Python scripts:
 - 💾 **Built-in env vars**: Automatic context variables (project root, git info, CI detection)
 - 🔒 **Private tasks**: Hide implementation details (tasks starting with `_`)
 - 🌍 **.env file support**: Load environment variables from files
-- 🔍 **Config discovery**: Automatically finds `uvr.toml` in parent directories
+- 🔍 **Config discovery**: Automatically finds `uvtx.toml` in parent directories
 
 ### ✨ New Features
 
@@ -56,7 +56,7 @@ uvr solves the common pain points of running Python scripts:
 
 ### Prerequisites
 
-**uvr requires [uv](https://docs.astral.sh/uv/) to be installed.** Install it first:
+**uvtx requires [uv](https://docs.astral.sh/uv/) to be installed.** Install it first:
 
 ```bash
 # Linux/macOS
@@ -69,24 +69,24 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 pip install uv
 ```
 
-### Install uvr
+### Install uvtx
 
 ```bash
 # Using uv (recommended)
-uv tool install uvr
+uv tool install uvtx
 
 # Using pip
-pip install uvr
+pip install uvtx
 
 # From source
-git clone https://github.com/mikeleppane/uvr
-cd uvr
+git clone https://github.com/mikeleppane/uvtxx
+cd uvtx
 uv pip install -e .
 ```
 
 ## Quick Start
 
-1. Create a `uvr.toml` in your project root:
+1. Create a `uvtx.toml` in your project root:
 
 ```toml
 [project]
@@ -97,7 +97,7 @@ PYTHONPATH = ["src"]
 
 [tasks.hello]
 description = "Print hello world"
-cmd = "python -c 'print(\"Hello from uvr!\")'"
+cmd = "python -c 'print(\"Hello from uvtx!\")'"
 
 [tasks.test]
 description = "Run tests"
@@ -109,8 +109,8 @@ pythonpath = ["src", "tests"]
 2. Run a task:
 
 ```bash
-uvr run hello
-uvr run test
+uvtx run hello
+uvtx run test
 ```
 
 ## New Features ✨
@@ -246,22 +246,22 @@ Run commands directly from CLI without defining them in config:
 
 ```bash
 # Simple inline command
-uvr run --inline "pytest tests/"
+uvtx run --inline "pytest tests/"
 
 # With environment variables
-uvr run --inline "python deploy.py" --env STAGE=prod --env DEBUG=0
+uvtx run --inline "python deploy.py" --env STAGE=prod --env DEBUG=0
 
 # With working directory
-uvr run --inline "make build" --cwd workspace/
+uvtx run --inline "make build" --cwd workspace/
 
 # With Python version
-uvr run --inline "python script.py" --python 3.11
+uvtx run --inline "python script.py" --python 3.11
 
 # With timeout
-uvr run --inline "long-task.py" --timeout 300
+uvtx run --inline "long-task.py" --timeout 300
 
 # All together
-uvr run --inline "pytest tests/" \
+uvtx run --inline "pytest tests/" \
   --env CI=1 \
   --cwd tests/ \
   --timeout 60 \
@@ -278,21 +278,21 @@ uvr run --inline "pytest tests/" \
 **With config integration:**
 ```bash
 # Config has: [project] runner = "dotenv run"
-uvr run --inline "python app.py"
+uvtx run --inline "python app.py"
 # Runs: dotenv run python app.py
 
 # Use specific profile
-uvr run --inline "deploy.sh" --profile prod --env VERSION=2.0
+uvtx run --inline "deploy.sh" --profile prod --env VERSION=2.0
 ```
 
 ## Core Concepts
 
 ### Config File Location
 
-uvr looks for configuration in:
+uvtx looks for configuration in:
 
-1. `uvr.toml` (preferred)
-2. `pyproject.toml` under `[tool.uvr]`
+1. `uvtx.toml` (preferred)
+2. `pyproject.toml` under `[tool.uvtx]`
 
 It searches from the current directory upward.
 
@@ -337,13 +337,13 @@ dependencies = ["fastapi", "uvicorn"]
 
 ```bash
 # Use default profile (dev)
-uvr run serve
+uvtx run serve
 
 # Explicit profile
-uvr run serve --profile prod
+uvtx run serve --profile prod
 
 # Override via environment
-UVR_PROFILE=ci uvr run test
+UVR_PROFILE=ci uvtx run test
 ```
 
 **Priority order** (later overrides earlier):
@@ -399,7 +399,7 @@ cmd = "pytest-watch"  # Overrides parent cmd
 description = "Format all code"
 cmd = "ruff format src/ tests/"
 dependencies = ["ruff"]
-aliases = ["f", "fmt"]  # Run with: uvr run f
+aliases = ["f", "fmt"]  # Run with: uvtx run f
 
 [tasks.lint]
 description = "Lint code"
@@ -414,7 +414,7 @@ dependencies = ["mypy"]
 aliases = ["t", "types"]
 ```
 
-**Private tasks** (start with `_`) are hidden from `uvr list`:
+**Private tasks** (start with `_`) are hidden from `uvtx list`:
 
 ```toml
 [tasks._setup-db]
@@ -428,16 +428,16 @@ cmd = "rm -rf .cache __pycache__"
 [tasks.ci]
 description = "Run CI checks"
 depends_on = ["_setup-db", "test", "_cleanup"]
-# _setup-db and _cleanup won't show in `uvr list`
-# but are still runnable: uvr run _setup-db
+# _setup-db and _cleanup won't show in `uvtx list`
+# but are still runnable: uvtx run _setup-db
 ```
 
 **List tasks:**
 
 ```bash
-uvr list              # Shows public tasks with aliases
-uvr list --all        # Shows private tasks too
-uvr list --verbose    # Shows full details
+uvtx list              # Shows public tasks with aliases
+uvtx list --all        # Shows private tasks too
+uvtx list --verbose    # Shows full details
 ```
 
 ## Configuration Reference
@@ -502,7 +502,7 @@ stages = [
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `description` | string | Task description shown in `uvr list` |
+| `description` | string | Task description shown in `uvtx list` |
 | `script` | string | Path to Python script to run |
 | `cmd` | string | Shell command to run |
 | `args` | list | Default arguments passed to script/cmd |
@@ -660,19 +660,19 @@ tags = ["production", "dangerous"]
 
 ```bash
 # List tasks with specific tag
-uvr list --tag ci
+uvtx list --tag ci
 
 # List tasks with multiple tags (AND logic)
-uvr list --tag ci --tag fast
+uvtx list --tag ci --tag fast
 
 # List tasks with any of the tags (OR logic)
-uvr list --tag fast --tag slow --match-any
+uvtx list --tag fast --tag slow --match-any
 
 # Run all tasks with a tag
-uvr multi --tag ci --parallel
+uvtx multi --tag ci --parallel
 
 # List all available tags
-uvr tags
+uvtx tags
 ```
 
 **Tag Inheritance:**
@@ -724,13 +724,13 @@ category = "deployment"
 
 ```bash
 # List tasks in a category
-uvr list --category testing
+uvtx list --category testing
 
 # Run all tasks in a category
-uvr multi --category quality
+uvtx multi --category quality
 
 # Run all quality checks in parallel
-uvr multi --category quality --parallel
+uvtx multi --category quality --parallel
 ```
 
 **Category Inheritance:**
@@ -812,7 +812,7 @@ from rich import print
 # Your code here
 ```
 
-uvr merges inline dependencies with task config (task config takes precedence).
+uvtx merges inline dependencies with task config (task config takes precedence).
 
 ## CLI Reference
 
@@ -820,60 +820,60 @@ uvr merges inline dependencies with task config (task config takes precedence).
 
 ```bash
 # Run a task
-uvr run <task> [args...]
-uvr run test
-uvr run test --verbose
-uvr run t                    # Using alias
+uvtx run <task> [args...]
+uvtx run test
+uvtx run test --verbose
+uvtx run t                    # Using alias
 
 # Run with specific profile
-uvr run serve --profile prod
-uvr run test -p ci
+uvtx run serve --profile prod
+uvtx run test -p ci
 
-# Run a script with uvr context
-uvr exec script.py [args...]
-uvr exec script.py --profile dev
+# Run a script with uvtx context
+uvtx exec script.py [args...]
+uvtx exec script.py --profile dev
 
 # Run multiple tasks
-uvr multi task1 task2 task3 --parallel
-uvr multi task1 task2 --sequential --on-failure=continue
-uvr multi --tag ci --parallel          # Run all tasks with 'ci' tag
-uvr multi --tag ci --tag fast          # Run tasks with both tags (AND)
-uvr multi --tag fast --tag slow --match-any  # Run tasks with either tag (OR)
+uvtx multi task1 task2 task3 --parallel
+uvtx multi task1 task2 --sequential --on-failure=continue
+uvtx multi --tag ci --parallel          # Run all tasks with 'ci' tag
+uvtx multi --tag ci --tag fast          # Run tasks with both tags (AND)
+uvtx multi --tag fast --tag slow --match-any  # Run tasks with either tag (OR)
 
 # Run a pipeline
-uvr pipeline ci
-uvr pipeline deploy --profile prod
+uvtx pipeline ci
+uvtx pipeline deploy --profile prod
 
 # Watch for changes and re-run
-uvr watch test                        # Watch *.py files
-uvr watch test -p "src/**/*.py"       # Custom pattern
-uvr watch test -p "**/*.py" -p "**/*.toml"  # Multiple patterns
-uvr watch lint --no-clear             # Don't clear screen
-uvr watch test --profile dev          # With profile
+uvtx watch test                        # Watch *.py files
+uvtx watch test -p "src/**/*.py"       # Custom pattern
+uvtx watch test -p "**/*.py" -p "**/*.toml"  # Multiple patterns
+uvtx watch lint --no-clear             # Don't clear screen
+uvtx watch test --profile dev          # With profile
 
 # Inspect task details
-uvr explain <task>           # Show resolved task configuration
-uvr explain test             # View task inheritance, env, dependencies
-uvr explain t --profile dev  # View with profile applied
+uvtx explain <task>           # Show resolved task configuration
+uvtx explain test             # View task inheritance, env, dependencies
+uvtx explain t --profile dev  # View with profile applied
 
 # List tasks and pipelines
-uvr list                    # Public tasks only
-uvr list --all              # Include private tasks (_prefix)
-uvr list --verbose          # Show full details
-uvr list -v -a              # Verbose + all tasks
-uvr list --tag ci           # Filter by tag
-uvr list --tag ci --tag fast  # Filter by multiple tags (AND)
-uvr list --tag fast --tag slow --match-any  # Filter by tags (OR)
+uvtx list                    # Public tasks only
+uvtx list --all              # Include private tasks (_prefix)
+uvtx list --verbose          # Show full details
+uvtx list -v -a              # Verbose + all tasks
+uvtx list --tag ci           # Filter by tag
+uvtx list --tag ci --tag fast  # Filter by multiple tags (AND)
+uvtx list --tag fast --tag slow --match-any  # Filter by tags (OR)
 
 # List all tags
-uvr tags                    # Show all tags with task counts
+uvtx tags                    # Show all tags with task counts
 
 # Validate configuration
-uvr check                   # Validate config with warnings
+uvtx check                   # Validate config with warnings
 
 # Initialize new config
-uvr init
-uvr init --force            # Overwrite existing
+uvtx init
+uvtx init --force            # Overwrite existing
 ```
 
 ### Global Options
@@ -888,38 +888,38 @@ Available on most commands:
 
 ### Command-Specific Options
 
-**`uvr run` / `uvr exec` / `uvr watch`:**
+**`uvtx run` / `uvtx exec` / `uvtx watch`:**
 
 - `-p, --profile PROFILE` - Profile to use
 - `-v, --verbose` - Show verbose output
 - `-c, --config PATH` - Config file path
 
-**`uvr multi`:**
+**`uvtx multi`:**
 
 - `--parallel` - Run tasks in parallel
 - `--sequential` - Run tasks sequentially (default)
 - `--on-failure MODE` - `fail-fast` (default), `wait`, or `continue`
 - `--output MODE` - `buffered` (default) or `interleaved`
 
-**`uvr list`:**
+**`uvtx list`:**
 
 - `-a, --all` - **NEW:** Show private tasks (starting with `_`)
 - `-v, --verbose` - Show aliases, dependencies, and descriptions
 
-**`uvr watch`:**
+**`uvtx watch`:**
 
 - `--pattern PATTERN` - File pattern to watch (can specify multiple)
 - `-i, --ignore PATTERN` - Patterns to ignore
 - `--debounce SECONDS` - Debounce time (default: 0.5)
 - `--no-clear` - Don't clear screen on changes
 
-### Task Inspection (`uvr explain`)
+### Task Inspection (`uvtx explain`)
 
-The `uvr explain` command shows detailed information about a task, including resolved configuration after inheritance and variable interpolation:
+The `uvtx explain` command shows detailed information about a task, including resolved configuration after inheritance and variable interpolation:
 
 ```bash
-uvr explain test
-uvr explain test --profile ci
+uvtx explain test
+uvtx explain test --profile ci
 ```
 
 **Output includes:**
@@ -943,7 +943,7 @@ uvr explain test --profile ci
 ```text
 Task: test-cov
 Description: Run tests with coverage
-Config: /home/user/project/uvr.toml
+Config: /home/user/project/uvtx.toml
 Inheritance: test-cov → test
 
 Type: command
@@ -962,13 +962,13 @@ Tags: ci, testing
 Aliases: tc
 ```
 
-### Configuration Validation (`uvr check`)
+### Configuration Validation (`uvtx check`)
 
-The `uvr check` command validates your configuration file and reports errors and warnings:
+The `uvtx check` command validates your configuration file and reports errors and warnings:
 
 ```bash
-uvr check
-uvr check -c custom.toml
+uvtx check
+uvtx check -c custom.toml
 ```
 
 **Validation includes:**
@@ -987,7 +987,7 @@ uvr check -c custom.toml
 **Example output:**
 
 ```text
-✓ Configuration valid: /home/user/project/uvr.toml
+✓ Configuration valid: /home/user/project/uvtx.toml
   Project: my-project
   Tasks: 15
   Pipelines: 2
@@ -1013,17 +1013,17 @@ Warnings:
 **User-Set Variables:**
 
 - `UVR_PROFILE` - Default profile to use (overridden by `--profile`)
-- `PYTHONPATH` - Merged with uvr's PYTHONPATH configuration
+- `PYTHONPATH` - Merged with uvtx's PYTHONPATH configuration
 
 **Built-in Variables (Automatically Set):**
 
-uvr automatically sets these environment variables for all tasks:
+uvtx automatically sets these environment variables for all tasks:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `UVR_TASK_NAME` | Canonical task name (even if called via alias) | `test` |
 | `UVR_PROJECT_ROOT` | Absolute path to project root | `/home/user/project` |
-| `UVR_CONFIG_FILE` | Path to config file | `/home/user/project/uvr.toml` |
+| `UVR_CONFIG_FILE` | Path to config file | `/home/user/project/uvtx.toml` |
 | `UVR_PROFILE` | Active profile name (if using --profile) | `dev` |
 | `UVR_PYTHON_VERSION` | Python version from config | `3.11` |
 | `UVR_CATEGORY` | Task category (if set) | `testing` |
@@ -1101,7 +1101,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v3
-      - run: uvx uvr pipeline ci --profile ci
+      - run: uvx uvtx pipeline ci --profile ci
 ```
 
 ### Multi-Environment Development
@@ -1148,14 +1148,14 @@ condition = { env_set = ["DEPLOY_KEY"] }
 
 ```bash
 # Development
-uvr run serve                    # Uses default dev profile
-uvr run s                        # Using alias
+uvtx run serve                    # Uses default dev profile
+uvtx run s                        # Using alias
 
 # Staging
-uvr run serve --profile staging
+uvtx run serve --profile staging
 
 # Production
-uvr run deploy --profile prod
+uvtx run deploy --profile prod
 ```
 
 ### DRY Task Definitions
@@ -1232,7 +1232,7 @@ aliases = ["pc"]
 
 ```bash
 #!/bin/sh
-uvr run pre-commit || exit 1
+uvtx run pre-commit || exit 1
 ```
 
 ### Complex Workflows
@@ -1291,28 +1291,28 @@ stages = [
 
 ```bash
 # Development
-uvr run process
+uvtx run process
 
 # Production
-uvr pipeline production --profile prod
+uvtx pipeline production --profile prod
 ```
 
 ## Shell Completion
 
-uvr supports tab completion for Bash, Zsh, and Fish shells. Completions are context-aware and dynamically load task names, profile names, and pipeline names from your `uvr.toml`.
+uvtx supports tab completion for Bash, Zsh, and Fish shells. Completions are context-aware and dynamically load task names, profile names, and pipeline names from your `uvtx.toml`.
 
 ### Bash
 
 Add to `~/.bashrc`:
 
 ```bash
-eval "$(_PT_COMPLETE=bash_source uvr)"
+eval "$(_PT_COMPLETE=bash_source uvtx)"
 ```
 
 Or install the completion file:
 
 ```bash
-_PT_COMPLETE=bash_source uvr > ~/.local/share/bash-completion/completions/uvr
+_PT_COMPLETE=bash_source uvtx > ~/.local/share/bash-completion/completions/uvtx
 ```
 
 ### Zsh
@@ -1320,20 +1320,20 @@ _PT_COMPLETE=bash_source uvr > ~/.local/share/bash-completion/completions/uvr
 Add to `~/.zshrc`:
 
 ```zsh
-eval "$(_PT_COMPLETE=zsh_source uvr)"
+eval "$(_PT_COMPLETE=zsh_source uvtx)"
 ```
 
 Or install the completion file:
 
 ```zsh
-_PT_COMPLETE=zsh_source uvr > ~/.zsh/completions/_pt
+_PT_COMPLETE=zsh_source uvtx > ~/.zsh/completions/_pt
 # Ensure ~/.zsh/completions is in your $fpath
 ```
 
 ### Fish
 
 ```fish
-_PT_COMPLETE=fish_source uvr > ~/.config/fish/completions/uvr.fish
+_PT_COMPLETE=fish_source uvtx > ~/.config/fish/completions/uvtx.fish
 ```
 
 ### Completion Features
@@ -1342,7 +1342,7 @@ _PT_COMPLETE=fish_source uvr > ~/.config/fish/completions/uvr.fish
 - **Profile names** - Complete configured profiles (dev, ci, prod, etc.)
 - **Pipeline names** - Complete defined pipelines
 - **CLI options** - Complete all flags and options
-- **Contextual** - Completions adapt to your `uvr.toml` configuration
+- **Contextual** - Completions adapt to your `uvtx.toml` configuration
 
 ## Development
 
@@ -1352,8 +1352,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing, and contr
 
 ```bash
 # Clone and setup
-git clone https://github.com/your-username/uvr.git
-cd uvr
+git clone https://github.com/your-username/uvtx.git
+cd uvtx
 uv sync --all-extras
 uv run pre-commit install
 
@@ -1364,7 +1364,7 @@ uv run pytest tests/
 uv run ruff format src/ tests/
 uv run ruff check src/ tests/
 uv run mypy src/
-uv run pytest tests/ --cov=src/uvr
+uv run pytest tests/ --cov=src/uvtx
 ```
 
 ## Contributing

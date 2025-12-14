@@ -10,8 +10,8 @@ import time
 from pathlib import Path
 from textwrap import dedent
 
-from uvr.config import load_config
-from uvr.script_meta import parse_script_metadata
+from uvtx.config import load_config
+from uvtx.script_meta import parse_script_metadata
 
 
 class TestConfigCaching:
@@ -19,7 +19,7 @@ class TestConfigCaching:
 
     def test_config_cache_hit_faster_than_miss(self, tmp_path: Path) -> None:
         """Cached config load should be significantly faster than initial parse."""
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text(
             dedent("""
                 [project]
@@ -51,7 +51,7 @@ class TestConfigCaching:
 
     def test_config_cache_invalidation_on_mtime_change(self, tmp_path: Path) -> None:
         """Config cache should invalidate when file is modified."""
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text(
             dedent("""
                 [project]
@@ -107,7 +107,7 @@ class TestConfigCaching:
                 ]
             )
 
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text("\n".join(config_lines))
 
         # Cold load
@@ -287,7 +287,7 @@ class TestRegressionBenchmarks:
     def test_typical_config_load_time(self, tmp_path: Path) -> None:
         """Typical config should load in reasonable time."""
         # Create a realistic config: 20 tasks, some inheritance, dependencies
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text(
             dedent("""
                 [project]

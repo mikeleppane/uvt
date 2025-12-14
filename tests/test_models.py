@@ -3,7 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
-from uvr.models import (
+from uvtx.models import (
     OnFailure,
     OutputMode,
     PipelineConfig,

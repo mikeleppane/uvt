@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    from uvr.models import TaskConfig, UvrConfig
+    from uvtx.models import TaskConfig, UvrConfig
 
 
 class CycleError(Exception):
@@ -196,7 +196,7 @@ def build_task_graph(
     Raises:
         UnknownTaskError: If a task references an unknown dependency.
     """
-    from uvr.config import resolve_task_name
+    from uvtx.config import resolve_task_name
 
     graph = TaskGraph()
 
@@ -249,7 +249,7 @@ def build_pipeline_graph(
     Returns:
         List of (task_names, parallel) tuples representing stages.
     """
-    from uvr.config import resolve_task_name
+    from uvtx.config import resolve_task_name
 
     pipeline = config.get_pipeline(pipeline_name)
     stages: list[tuple[list[str], bool]] = []

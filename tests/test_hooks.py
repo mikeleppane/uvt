@@ -3,7 +3,7 @@
 from pathlib import Path
 from textwrap import dedent
 
-from uvr.runner import Runner
+from uvtx.runner import Runner
 
 
 class TestTaskHooks:
@@ -32,7 +32,7 @@ class TestTaskHooks:
         )
 
         # Create config
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -62,7 +62,7 @@ class TestTaskHooks:
         task_script.write_text('from pathlib import Path; Path("task_ran.txt").write_text("task")')
 
         # Create config
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -103,7 +103,7 @@ class TestTaskHooks:
         task_script.write_text("print('success')")
 
         # Create config
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -142,7 +142,7 @@ class TestTaskHooks:
         task_script.write_text("import sys; sys.exit(1)")
 
         # Create config
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -174,7 +174,7 @@ class TestTaskHooks:
         task_script = tmp_path / "task.py"
         task_script.write_text("print('success')")
 
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -222,7 +222,7 @@ class TestTaskHooks:
         task_script = tmp_path / "task.py"
         task_script.write_text("print('task')")
 
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -261,7 +261,7 @@ class TestTaskHooks:
         task_script = tmp_path / "task.py"
         task_script.write_text("print('task')")
 
-        config_file = tmp_path / "uvr.toml"
+        config_file = tmp_path / "uvt.toml"
         config_file.write_text(
             dedent("""\
             [project]

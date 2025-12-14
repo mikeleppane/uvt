@@ -1,5 +1,5 @@
 [project]
-name = "uvr"
+name = "uvtx"
 version = "0.1.0"
 description = "A modern Python task runner built for uv with profiles, inheritance, and PEP 723 support"
 readme = "README.md"
@@ -42,31 +42,33 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/mikeleppane/uvr"
-Repository = "https://github.com/mikeleppane/uvr"
-Documentation = "https://github.com/mikeleppane/uvr#readme"
-"Issue Tracker" = "https://github.com/mikeleppane/uvr/issues"
-Changelog = "https://github.com/mikeleppane/uvr/releases"
+Homepage = "https://github.com/mikeleppane/uvtx"
+Repository = "https://github.com/mikeleppane/uvtx"
+Documentation = "https://github.com/mikeleppane/uvtx#readme"
+"Issue Tracker" = "https://github.com/mikeleppane/uvtx/issues"
+Changelog = "https://github.com/mikeleppane/uvtx/releases"
 
 [dependency-groups]
 dev = [
+    "build>=1.3.0",
     "mypy>=1.19.0",
     "pre-commit>=4.5.0",
     "pytest>=9.0.2",
     "pytest-asyncio>=1.3.0",
     "pytest-cov>=7.0.0",
     "ruff>=0.14.9",
+    "twine>=6.2.0",
 ]
 
 [project.scripts]
-uvr = "uvr.cli:main"
+uvtx = "uvtx.cli:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/uvr"]
+packages = ["src/uvtx"]
 
 [tool.ruff]
 target-version = "py310"
@@ -98,7 +100,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["uvr"]
+known-first-party = ["uvtx"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
