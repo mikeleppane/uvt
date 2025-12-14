@@ -5,8 +5,8 @@ from textwrap import dedent
 
 import pytest
 
-from pt.config import load_config
-from pt.models import PtConfig
+from uvr.config import load_config
+from uvr.models import UvrConfig
 
 
 class TestTagValidation:
@@ -14,7 +14,7 @@ class TestTagValidation:
 
     def test_valid_tags(self, tmp_path: Path) -> None:
         """Test that valid tags are accepted."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -31,7 +31,7 @@ class TestTagValidation:
 
     def test_empty_tag_rejected(self, tmp_path: Path) -> None:
         """Test that empty tags are rejected."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -48,7 +48,7 @@ class TestTagValidation:
 
     def test_invalid_tag_characters(self, tmp_path: Path) -> None:
         """Test that tags with invalid characters are rejected."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -69,7 +69,7 @@ class TestTagInheritance:
 
     def test_tags_are_merged_and_deduplicated(self, tmp_path: Path) -> None:
         """Test that child tags are merged with parent tags."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -94,7 +94,7 @@ class TestTagInheritance:
 
     def test_tags_inheritance_chain(self, tmp_path: Path) -> None:
         """Test tag inheritance through multiple levels."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -122,9 +122,9 @@ class TestTagInheritance:
 class TestTagFiltering:
     """Tests for filtering tasks by tags."""
 
-    def setup_config(self, tmp_path: Path) -> PtConfig:
+    def setup_config(self, tmp_path: Path) -> UvrConfig:
         """Create a test config with tagged tasks."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]

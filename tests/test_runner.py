@@ -5,8 +5,8 @@ from textwrap import dedent
 
 import pytest
 
-from pt.config import load_config
-from pt.runner import Runner
+from uvr.config import load_config
+from uvr.runner import Runner
 
 
 class TestRunnerCreation:
@@ -14,7 +14,7 @@ class TestRunnerCreation:
 
     def test_from_config_file_basic(self, tmp_path: Path) -> None:
         """Test creating Runner from config file."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -32,7 +32,7 @@ class TestRunnerCreation:
 
     def test_from_config_file_with_verbose(self, tmp_path: Path) -> None:
         """Test creating Runner with verbose mode."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -48,7 +48,7 @@ class TestRunnerCreation:
 
     def test_from_config_file_with_profile(self, tmp_path: Path) -> None:
         """Test creating Runner with profile."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -71,7 +71,7 @@ class TestRunTask:
 
     def test_run_simple_cmd(self, tmp_path: Path) -> None:
         """Test running a simple command task."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -94,7 +94,7 @@ class TestRunTask:
         script = tmp_path / "script.py"
         script.write_text('print("from script")')
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -121,7 +121,7 @@ class TestRunTask:
             """)
         )
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -144,7 +144,7 @@ class TestRunTask:
         subdir = tmp_path / "subdir"
         subdir.mkdir()
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -172,7 +172,7 @@ class TestRunTask:
             """)
         )
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -192,7 +192,7 @@ class TestRunTask:
 
     def test_run_task_not_found(self, tmp_path: Path) -> None:
         """Test running non-existent task raises KeyError with suggestion."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -212,7 +212,7 @@ class TestRunTask:
         script = tmp_path / "fail.py"
         script.write_text("import sys; sys.exit(1)")
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -242,7 +242,7 @@ class TestRunTaskWithDependencies:
         setup_script = tmp_path / "setup.py"
         setup_script.write_text(f'open("{output_file}", "w").write("setup\\n")')
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -266,7 +266,7 @@ class TestRunTaskWithDependencies:
 
     def test_run_task_with_multiple_dependencies(self, tmp_path: Path) -> None:
         """Test running task with multiple dependencies."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -294,7 +294,7 @@ class TestRunTaskWithDependencies:
         fail_script = tmp_path / "fail.py"
         fail_script.write_text("import sys; sys.exit(1)")
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -324,7 +324,7 @@ class TestRunTaskWithConditions:
 
         current_platform = platform.system().lower()
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent(f"""\
                 [project]
@@ -344,7 +344,7 @@ class TestRunTaskWithConditions:
 
     def test_run_task_with_platform_condition_skip(self, tmp_path: Path) -> None:
         """Test task with non-matching platform condition is skipped."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -368,7 +368,7 @@ class TestRunTaskWithConditions:
 
         os.environ["TEST_CONDITION"] = "1"
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -402,7 +402,7 @@ class TestRunTaskWithProfile:
             """)
         )
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -428,7 +428,7 @@ class TestRunMultipleTasks:
 
     def test_run_multiple_tasks_sequential(self, tmp_path: Path) -> None:
         """Test running multiple tasks sequentially."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -451,7 +451,7 @@ class TestRunMultipleTasks:
 
     def test_run_multiple_tasks_parallel(self, tmp_path: Path) -> None:
         """Test running multiple tasks in parallel."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -478,7 +478,7 @@ class TestBuildCommand:
 
     def test_build_command_basic(self, tmp_path: Path) -> None:
         """Test building basic command."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -500,7 +500,7 @@ class TestBuildCommand:
 
     def test_build_command_with_dependencies(self, tmp_path: Path) -> None:
         """Test building command with dependencies."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -522,7 +522,7 @@ class TestBuildCommand:
 
     def test_build_command_with_pythonpath(self, tmp_path: Path) -> None:
         """Test building command with PYTHONPATH."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -552,7 +552,7 @@ class TestTaskHooksIntegration:
         hook_script = tmp_path / "before.py"
         hook_script.write_text('print("before hook")')
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -576,7 +576,7 @@ class TestTaskHooksIntegration:
 
         marker = tmp_path / "marker.txt"
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent(f"""\
                 [project]
@@ -613,7 +613,7 @@ class TestPEP723Integration:
             """)
         )
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]

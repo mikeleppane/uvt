@@ -1,4 +1,4 @@
-# Contributing to pt
+# Contributing to uvr
 
 Thank you for your interest in contributing! This guide will help you set up your development environment and understand our development workflow.
 
@@ -12,8 +12,8 @@ Thank you for your interest in contributing! This guide will help you set up you
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/pt.git
-cd pt
+git clone https://github.com/your-username/uvr.git
+cd uvr
 ```
 
 ### 2. Install dependencies with uv
@@ -22,7 +22,7 @@ cd pt
 # Install all dependencies including dev tools
 uv sync --all-extras
 
-# Or install pt in editable mode
+# Or install uvr in editable mode
 uv pip install -e .[dev]
 ```
 
@@ -73,7 +73,7 @@ Pre-commit hooks will automatically run ruff format, ruff check, and mypy before
 uv run pytest tests/
 
 # Run with coverage
-uv run pytest tests/ --cov=src/pt --cov-report=term-missing
+uv run pytest tests/ --cov=src/uvr --cov-report=term-missing
 
 # Run specific test file
 uv run pytest tests/test_config.py
@@ -98,34 +98,34 @@ uv run ruff check --fix src/ tests/
 uv run mypy src/
 ```
 
-### Using pt in Development
+### Using uvr in Development
 
-Since pt is installed in editable mode, you can test changes immediately:
+Since uvr is installed in editable mode, you can test changes immediately:
 
 ```bash
-# Run pt from the development version
-uv run pt run <task>
+# Run uvr from the development version
+uv run uvr run <task>
 
 # Or activate the virtual environment
 source .venv/bin/activate
-pt run <task>
+uvr run <task>
 ```
 
-### Testing pt.toml Changes
+### Testing uvr.toml Changes
 
-You can use the pt project itself for testing:
+You can use the uvr project itself for testing:
 
 ```bash
-# pt has its own pt.toml for self-hosting
-uv run pt list
-uv run pt check
+# uvr has its own uvr.toml for self-hosting
+uv run uvr list
+uv run uvr check
 ```
 
 ## Project Structure
 
 ```
-pt/
-├── src/pt/              # Source code
+uvr/
+├── src/uvr/              # Source code
 │   ├── cli.py           # Click CLI commands
 │   ├── config.py        # Config loading and inheritance
 │   ├── runner.py        # Task execution orchestration
@@ -141,12 +141,12 @@ pt/
 │   ├── test_*.py        # Test files
 │   └── fixtures/        # Test fixtures
 ├── completion/          # Shell completion scripts
-│   ├── pt-completion.bash
-│   ├── pt-completion.zsh
-│   └── pt.fish
+│   ├── uvr-completion.bash
+│   ├── uvr-completion.zsh
+│   └── uvr.fish
 ├── .github/workflows/   # CI/CD pipelines
 ├── pyproject.toml       # Project configuration
-├── pt.toml              # pt's own task definitions
+├── uvr.toml              # uvr's own task definitions
 └── README.md            # User documentation
 ```
 
@@ -161,7 +161,7 @@ import pytest
 
 def test_example(tmp_path: Path) -> None:
     """Test description."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         dedent("""
         [project]
@@ -173,7 +173,7 @@ def test_example(tmp_path: Path) -> None:
     )
 
     # Your test logic
-    from pt.config import load_config
+    from uvr.config import load_config
     config, path = load_config(config_file)
     assert config.project.name == "test"
 ```
@@ -229,7 +229,7 @@ Then create a Pull Request on GitHub.
 
 Releases are automated via GitHub Actions:
 
-1. Update version in `src/pt/__init__.py`
+1. Update version in `src/uvr/__init__.py`
 2. Update `CHANGELOG.md` (if exists)
 3. Create and push a tag:
 
@@ -264,4 +264,4 @@ git push origin v0.2.0
 - [Pydantic documentation](https://docs.pydantic.dev/)
 - [pytest documentation](https://docs.pytest.org/)
 
-Thank you for contributing to pt!
+Thank you for contributing to uvr!

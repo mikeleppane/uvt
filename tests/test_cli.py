@@ -6,8 +6,8 @@ from textwrap import dedent
 import pytest
 from click.testing import CliRunner
 
-from pt.cli import main, _validate_config, _get_inheritance_chain
-from pt.config import load_config
+from uvr.cli import _get_inheritance_chain, _validate_config, main
+from uvr.config import load_config
 
 
 @pytest.fixture
@@ -21,7 +21,7 @@ class TestExplainCommand:
 
     def test_explain_simple_task(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test explaining a simple task."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -43,7 +43,7 @@ class TestExplainCommand:
 
     def test_explain_task_with_inheritance(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test explaining a task with inheritance chain."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -68,7 +68,7 @@ class TestExplainCommand:
 
     def test_explain_task_with_depends_on(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test explaining a task with dependencies."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -94,7 +94,7 @@ class TestExplainCommand:
 
     def test_explain_task_with_alias(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test explaining a task by its alias."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -114,7 +114,7 @@ class TestExplainCommand:
 
     def test_explain_task_not_found(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test explaining a non-existent task."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -131,7 +131,7 @@ class TestExplainCommand:
 
     def test_explain_task_with_conditions(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test explaining a task with conditions."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -152,7 +152,7 @@ class TestExplainCommand:
 
     def test_explain_task_with_hooks(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test explaining a task with hooks."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -174,7 +174,7 @@ class TestExplainCommand:
 
     def test_explain_task_with_profile(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test explaining a task with a profile."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -202,7 +202,7 @@ class TestCheckCommand:
 
     def test_check_valid_config(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test checking a valid configuration."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -220,7 +220,7 @@ class TestCheckCommand:
 
     def test_check_invalid_depends_on(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test checking config with invalid depends_on reference."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -239,7 +239,7 @@ class TestCheckCommand:
 
     def test_check_invalid_pipeline_task(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test checking config with invalid pipeline task reference."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -263,7 +263,7 @@ class TestCheckCommand:
 
     def test_check_invalid_default_profile(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test checking config with invalid default_profile."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -283,7 +283,7 @@ class TestCheckCommand:
 
     def test_check_invalid_on_error_task(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test checking config with invalid on_error_task."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -303,7 +303,7 @@ class TestCheckCommand:
 
     def test_check_warning_missing_description(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test warning for tasks without description."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -321,7 +321,7 @@ class TestCheckCommand:
 
     def test_check_warning_unused_dependency_group(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test warning for unused dependency groups."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -347,7 +347,7 @@ class TestCheckCommand:
         self, runner: CliRunner, tmp_path: Path
     ) -> None:
         """Test warning for variables defined but use_vars not enabled."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -366,11 +366,9 @@ class TestCheckCommand:
         assert result.exit_code == 0
         assert "use_vars is not enabled" in result.output
 
-    def test_check_no_warnings_for_private_tasks(
-        self, runner: CliRunner, tmp_path: Path
-    ) -> None:
+    def test_check_no_warnings_for_private_tasks(self, runner: CliRunner, tmp_path: Path) -> None:
         """Test that private tasks don't trigger description warnings."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -396,7 +394,7 @@ class TestValidateConfig:
 
     def test_validate_valid_config(self, tmp_path: Path) -> None:
         """Test validation of a valid config."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -417,7 +415,7 @@ class TestValidateConfig:
 
     def test_validate_detects_missing_depends_on_task(self, tmp_path: Path) -> None:
         """Test that validation detects missing depends_on tasks."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -442,7 +440,7 @@ class TestGetInheritanceChain:
 
     def test_no_inheritance(self, tmp_path: Path) -> None:
         """Test task with no inheritance."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -459,7 +457,7 @@ class TestGetInheritanceChain:
 
     def test_single_inheritance(self, tmp_path: Path) -> None:
         """Test task with single level inheritance."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -475,22 +473,23 @@ class TestGetInheritanceChain:
 
         # Load raw config (before inheritance resolution)
         import sys
+
         if sys.version_info >= (3, 11):
             import tomllib
         else:
             import tomli as tomllib
-        from pt.models import PtConfig
+        from uvr.models import UvrConfig
 
         with config_file.open("rb") as f:
             raw_data = tomllib.load(f)
-        raw_config = PtConfig.model_validate(raw_data)
+        raw_config = UvrConfig.model_validate(raw_data)
 
         chain = _get_inheritance_chain(raw_config, "test")
         assert chain == ["test", "base"]
 
     def test_deep_inheritance(self, tmp_path: Path) -> None:
         """Test task with multi-level inheritance."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -509,15 +508,16 @@ class TestGetInheritanceChain:
 
         # Load raw config (before inheritance resolution)
         import sys
+
         if sys.version_info >= (3, 11):
             import tomllib
         else:
             import tomli as tomllib
-        from pt.models import PtConfig
+        from uvr.models import UvrConfig
 
         with config_file.open("rb") as f:
             raw_data = tomllib.load(f)
-        raw_config = PtConfig.model_validate(raw_data)
+        raw_config = UvrConfig.model_validate(raw_data)
 
         chain = _get_inheritance_chain(raw_config, "child")
         assert chain == ["child", "mid", "base"]

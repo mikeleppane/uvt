@@ -11,13 +11,13 @@ from rich.panel import Panel
 from rich.progress import BarColumn, Progress, SpinnerColumn, TaskID, TextColumn
 from rich.table import Table
 
-from pt.models import OnFailure, OutputMode
+from uvr.models import OnFailure, OutputMode
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
     from typing import Any
 
-    from pt.executor import ExecutionResult
+    from uvr.executor import ExecutionResult
 
 
 class TaskExecutor(Protocol):

@@ -5,8 +5,8 @@ import platform
 import sys
 from pathlib import Path
 
-from pt.condition_evaluator import ConditionEvaluator
-from pt.models import ConditionConfig
+from uvr.condition_evaluator import ConditionEvaluator
+from uvr.models import ConditionConfig
 
 
 class TestPlatformCondition:

@@ -5,7 +5,7 @@ from textwrap import dedent
 
 import pytest
 
-from pt.config import (
+from uvr.config import (
     ConfigError,
     ConfigNotFoundError,
     build_env,
@@ -14,14 +14,14 @@ from pt.config import (
     merge_env,
     resolve_path,
 )
-from pt.models import PtConfig
+from uvr.models import UvrConfig
 
 
 class TestFindConfigFile:
     """Tests for find_config_file function."""
 
     def test_find_pt_toml(self, tmp_path: Path) -> None:
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text("[project]\nname = 'test'")
 
         result = find_config_file(tmp_path)
@@ -35,7 +35,7 @@ class TestFindConfigFile:
         assert result == config_file
 
     def test_prefer_pt_toml(self, tmp_path: Path) -> None:
-        pt_toml = tmp_path / "pt.toml"
+        pt_toml = tmp_path / "uvr.toml"
         pt_toml.write_text("[project]")
 
         pyproject = tmp_path / "pyproject.toml"
@@ -45,7 +45,7 @@ class TestFindConfigFile:
         assert result == pt_toml
 
     def test_find_in_parent(self, tmp_path: Path) -> None:
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text("[project]")
 
         subdir = tmp_path / "subdir" / "nested"
@@ -132,13 +132,13 @@ class TestBuildEnv:
     """Tests for build_env function."""
 
     def test_simple_values(self, tmp_path: Path) -> None:
-        config = PtConfig(env={"DEBUG": "1", "LOG_LEVEL": "info"})
+        config = UvrConfig(env={"DEBUG": "1", "LOG_LEVEL": "info"})
         env = build_env(config, tmp_path)
         assert env["DEBUG"] == "1"
         assert env["LOG_LEVEL"] == "info"
 
     def test_list_values_joined(self, tmp_path: Path) -> None:
-        config = PtConfig(env={"PYTHONPATH": ["src", "lib"]})
+        config = UvrConfig(env={"PYTHONPATH": ["src", "lib"]})
         env = build_env(config, tmp_path)
 
         import os
@@ -152,7 +152,7 @@ class TestBuildEnv:
         assert env["PYTHONPATH"] == expected
 
     def test_paths_resolved(self, tmp_path: Path) -> None:
-        config = PtConfig(env={"PYTHONPATH": ["./src"]})
+        config = UvrConfig(env={"PYTHONPATH": ["./src"]})
         env = build_env(config, tmp_path)
 
         assert str(tmp_path / "src") in env["PYTHONPATH"]

@@ -57,7 +57,7 @@ body:
         - Dependency resolution (building task graph)
         - Parallel execution (concurrent tasks)
         - Watch mode (file watching and auto-rerun)
-        - Configuration loading (parsing pt.toml)
+        - Configuration loading (parsing uvr.toml)
         - PEP 723 script execution
         - Hook execution
         - Other
@@ -68,7 +68,7 @@ body:
     id: pt-config
     attributes:
       label: pt Configuration
-      description: Please provide the relevant portion of your `pt.toml` file
+      description: Please provide the relevant portion of your `uvr.toml` file
       placeholder: |
         [tasks.slow-task]
         script = "heavy_script.py"

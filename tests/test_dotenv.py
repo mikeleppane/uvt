@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pathlib import Path
 
-from pt.dotenv import _expand_variables, _process_escape_sequences, load_env_file, load_env_files
+from uvr.dotenv import _expand_variables, _process_escape_sequences, load_env_file, load_env_files
 
 
 class TestProcessEscapeSequences:
@@ -81,23 +81,23 @@ class TestExpandVariables:
 
     def test_expand_from_system_env(self) -> None:
         """Test expanding from system environment."""
-        os.environ["PT_TEST_VAR"] = "system_value"
+        os.environ["UVR_TEST_VAR"] = "system_value"
         try:
             env: dict[str, str] = {}
-            result = _expand_variables("value is ${PT_TEST_VAR}", env)
+            result = _expand_variables("value is ${UVR_TEST_VAR}", env)
             assert result == "value is system_value"
         finally:
-            del os.environ["PT_TEST_VAR"]
+            del os.environ["UVR_TEST_VAR"]
 
     def test_local_env_overrides_system(self) -> None:
         """Test that local env takes precedence over system env."""
-        os.environ["PT_TEST_VAR"] = "system_value"
+        os.environ["UVR_TEST_VAR"] = "system_value"
         try:
-            env = {"PT_TEST_VAR": "local_value"}
-            result = _expand_variables("value is ${PT_TEST_VAR}", env)
+            env = {"UVR_TEST_VAR": "local_value"}
+            result = _expand_variables("value is ${UVR_TEST_VAR}", env)
             assert result == "value is local_value"
         finally:
-            del os.environ["PT_TEST_VAR"]
+            del os.environ["UVR_TEST_VAR"]
 
     def test_expand_at_start(self) -> None:
         """Test expansion at start of string."""

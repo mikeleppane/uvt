@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pt.script_meta import (
+from uvr.script_meta import (
     merge_dependencies,
     parse_script_metadata,
     parse_script_metadata_from_string,

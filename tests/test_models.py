@@ -3,14 +3,14 @@
 import pytest
 from pydantic import ValidationError
 
-from pt.models import (
+from uvr.models import (
     OnFailure,
     OutputMode,
     PipelineConfig,
-    PtConfig,
     StageConfig,
     TaskConfig,
     TaskDependency,
+    UvrConfig,
 )
 
 
@@ -91,16 +91,16 @@ class TestPipelineConfig:
 
 
 class TestPtConfig:
-    """Tests for PtConfig model."""
+    """Tests for UvrConfig model."""
 
     def test_empty_config(self) -> None:
-        config = PtConfig()
+        config = UvrConfig()
         assert config.tasks == {}
         assert config.pipelines == {}
         assert config.dependencies == {}
 
     def test_full_config(self) -> None:
-        config = PtConfig(
+        config = UvrConfig(
             env={"PYTHONPATH": ["src"], "DEBUG": "1"},
             dependencies={
                 "common": ["requests"],
@@ -115,17 +115,17 @@ class TestPtConfig:
         assert "test" in config.tasks
 
     def test_get_task(self) -> None:
-        config = PtConfig(tasks={"test": TaskConfig(cmd="pytest")})
+        config = UvrConfig(tasks={"test": TaskConfig(cmd="pytest")})
         task = config.get_task("test")
         assert task.cmd == "pytest"
 
     def test_get_task_not_found(self) -> None:
-        config = PtConfig()
+        config = UvrConfig()
         with pytest.raises(KeyError, match="not found"):
             config.get_task("nonexistent")
 
     def test_resolve_dependencies_group(self) -> None:
-        config = PtConfig(
+        config = UvrConfig(
             dependencies={"testing": ["pytest", "pytest-cov"]},
             tasks={"test": TaskConfig(cmd="pytest", dependencies=["testing"])},
         )
@@ -133,7 +133,7 @@ class TestPtConfig:
         assert resolved == ["pytest", "pytest-cov"]
 
     def test_resolve_dependencies_mixed(self) -> None:
-        config = PtConfig(
+        config = UvrConfig(
             dependencies={"testing": ["pytest"]},
             tasks={
                 "test": TaskConfig(
@@ -146,11 +146,11 @@ class TestPtConfig:
         assert resolved == ["pytest", "requests"]
 
     def test_env_list_values(self) -> None:
-        config = PtConfig(env={"PYTHONPATH": ["src", "lib"]})
+        config = UvrConfig(env={"PYTHONPATH": ["src", "lib"]})
         assert config.env["PYTHONPATH"] == ["src", "lib"]
 
     def test_env_string_values(self) -> None:
-        config = PtConfig(env={"DEBUG": "1"})
+        config = UvrConfig(env={"DEBUG": "1"})
         assert config.env["DEBUG"] == "1"
 
 

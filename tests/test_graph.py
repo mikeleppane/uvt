@@ -2,13 +2,13 @@
 
 import pytest
 
-from pt.graph import (
+from uvr.graph import (
     CycleError,
     TaskGraph,
     UnknownTaskError,
     build_task_graph,
 )
-from pt.models import PtConfig, TaskConfig
+from uvr.models import TaskConfig, UvrConfig
 
 
 class TestTaskGraph:
@@ -118,12 +118,12 @@ class TestBuildTaskGraph:
     """Tests for build_task_graph function."""
 
     def test_single_task(self) -> None:
-        config = PtConfig(tasks={"test": TaskConfig(cmd="pytest")})
+        config = UvrConfig(tasks={"test": TaskConfig(cmd="pytest")})
         graph = build_task_graph(config, ["test"])
         assert "test" in graph.nodes
 
     def test_with_dependencies(self) -> None:
-        config = PtConfig(
+        config = UvrConfig(
             tasks={
                 "lint": TaskConfig(cmd="ruff"),
                 "test": TaskConfig(cmd="pytest"),
@@ -137,7 +137,7 @@ class TestBuildTaskGraph:
         assert "test" in graph.nodes
 
     def test_unknown_dependency(self) -> None:
-        config = PtConfig(
+        config = UvrConfig(
             tasks={
                 "task": TaskConfig(depends_on=["nonexistent"]),
             }
@@ -146,6 +146,6 @@ class TestBuildTaskGraph:
             build_task_graph(config, ["task"])
 
     def test_unknown_task(self) -> None:
-        config = PtConfig()
+        config = UvrConfig()
         with pytest.raises(KeyError, match="not found"):
             build_task_graph(config, ["nonexistent"])

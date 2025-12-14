@@ -191,8 +191,8 @@ class ProjectConfig(BaseModel):
     runner: str | None = None  # Global command prefix for all tasks
 
 
-class PtConfig(BaseModel):
-    """Root configuration model for pt.toml."""
+class UvrConfig(BaseModel):
+    """Root configuration model for uvr.toml."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -218,7 +218,7 @@ class PtConfig(BaseModel):
         return result
 
     @model_validator(mode="after")
-    def validate_config(self) -> PtConfig:
+    def validate_config(self) -> UvrConfig:
         """Validate aliases are unique."""
         return self.validate_aliases()
 
@@ -358,7 +358,7 @@ class PtConfig(BaseModel):
                 categories[task.category] = categories.get(task.category, 0) + 1
         return categories
 
-    def validate_aliases(self) -> PtConfig:
+    def validate_aliases(self) -> UvrConfig:
         """Ensure aliases are globally unique across all tasks.
 
         Returns:

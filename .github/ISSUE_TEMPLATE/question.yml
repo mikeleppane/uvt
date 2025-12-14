@@ -20,7 +20,7 @@ body:
       description: What area does your question relate to?
       options:
         - Installation and Setup
-        - Configuration (pt.toml syntax)
+        - Configuration (uvr.toml syntax)
         - Task Inheritance (extending tasks)
         - Profiles and Environments (.env files, profile switching)
         - PEP 723 Scripts (inline script dependencies)
@@ -50,7 +50,7 @@ body:
     id: context
     attributes:
       label: Context
-      description: Provide any relevant context, such as your pt.toml configuration or what you've already tried
+      description: Provide any relevant context, such as your uvr.toml configuration or what you've already tried
       placeholder: |
         I'm trying to set up a task that...
         I've tried configuring it like this:

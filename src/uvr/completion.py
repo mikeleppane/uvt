@@ -6,11 +6,11 @@ from typing import Any
 
 from click.shell_completion import CompletionItem
 
-from pt.config import ConfigNotFoundError, load_config
+from uvr.config import ConfigNotFoundError, load_config
 
 
 def complete_task_name(_ctx: Any, _param: Any, incomplete: str) -> list[CompletionItem]:
-    """Complete task names from pt.toml.
+    """Complete task names from uvr.toml.
 
     Args:
         _ctx: Click context (unused)
@@ -43,7 +43,7 @@ def complete_task_name(_ctx: Any, _param: Any, incomplete: str) -> list[Completi
 
 
 def complete_profile_name(_ctx: Any, _param: Any, incomplete: str) -> list[CompletionItem]:
-    """Complete profile names from pt.toml.
+    """Complete profile names from uvr.toml.
 
     Args:
         _ctx: Click context (unused)
@@ -62,7 +62,7 @@ def complete_profile_name(_ctx: Any, _param: Any, incomplete: str) -> list[Compl
 
 
 def complete_pipeline_name(_ctx: Any, _param: Any, incomplete: str) -> list[CompletionItem]:
-    """Complete pipeline names from pt.toml.
+    """Complete pipeline names from uvr.toml.
 
     Args:
         _ctx: Click context (unused)

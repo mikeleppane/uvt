@@ -17,7 +17,7 @@
   - Tag merge rules: merge, deduplicate, sort alphabetically
 - **runner.py** → Task orchestration, hooks execution, condition evaluation, builds `UvCommand` instances
   - `_execute_hook()` / `_execute_hook_async()`: Execute hook scripts
-  - Hook environment: `PT_TASK_NAME`, `PT_HOOK_TYPE`, `PT_TASK_EXIT_CODE`
+  - Hook environment: `UVR_TASK_NAME`, `UVR_HOOK_TYPE`, `UVR_TASK_EXIT_CODE`
 - **executor.py** → Subprocess execution via `uv run`, timeout handling, output capture
 - **parallel.py** → Async task execution with `OnFailure` modes (fail-fast/wait/continue) and output modes (buffered/interleaved)
 - **graph.py** → DAG construction, topological sort, cycle detection for task dependencies
@@ -29,7 +29,7 @@
 
 ### Execution Flow
 
-1. **Config Loading**: Discover `pt.toml` or `pyproject.toml` (walking up directory tree)
+1. **Config Loading**: Discover `uvr.toml` or `pyproject.toml` (walking up directory tree)
 2. **Task Resolution**: Resolve task inheritance (`extend` field), merge profile/env vars
 3. **Graph Building**: Construct DAG from `depends_on`, detect cycles
 4. **Dependency Merging**: Merge inline PEP 723 deps with task deps (deduplicate)
@@ -150,7 +150,7 @@ def test_task_inheritance(tmp_path: Path) -> None:
         extend = "base"
         dependencies = ["pytest-cov"]
     """)
-    config_path = tmp_path / "pt.toml"
+    config_path = tmp_path / "uvr.toml"
     config_path.write_text(config_content)
     # Load and assert...
 ```
@@ -182,7 +182,7 @@ Always provide context in errors: file paths, task names, cycle details.
 2. **Path resolution**: Always use `resolve_path(path, project_root)` from config.py for relative paths.
 3. **Environment expansion**: Use `dotenv.py` for `${VAR}` expansion, not manual string replacement.
 4. **Dependency deduplication**: Use `list({*deps1, *deps2})` pattern to preserve order while deduping.
-5. **Profile names**: `default_profile` in config vs `--profile` CLI arg vs `PT_PROFILE` env var (precedence: CLI → env → config).
+5. **Profile names**: `default_profile` in config vs `--profile` CLI arg vs `UVR_PROFILE` env var (precedence: CLI → env → config).
 
 ## Key Files for Reference
 

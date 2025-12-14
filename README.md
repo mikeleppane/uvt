@@ -1,17 +1,17 @@
-# pt
+# uvr
 
-[![CI](https://github.com/mikeleppane/pt/workflows/CI/badge.svg)](https://github.com/mikeleppane/pt/actions)
-[![PyPI](https://img.shields.io/pypi/v/pt.svg)](https://pypi.org/project/pt/)
-[![Python](https://img.shields.io/pypi/pyversions/pt.svg)](https://pypi.org/project/pt/)
-[![License](https://img.shields.io/pypi/l/pt.svg)](https://github.com/mikeleppane/pt/blob/main/LICENSE)
-[![codecov](https://codecov.io/gh/mikeleppane/pt/branch/main/graph/badge.svg)](https://codecov.io/gh/mikeleppane/pt)
+[![CI](https://github.com/mikeleppane/uvr/workflows/CI/badge.svg)](https://github.com/mikeleppane/uvr/actions)
+[![PyPI](https://img.shields.io/pypi/v/uvr.svg)](https://pypi.org/project/uvr/)
+[![Python](https://img.shields.io/pypi/pyversions/uvr.svg)](https://pypi.org/project/uvr/)
+[![License](https://img.shields.io/pypi/l/uvr.svg)](https://github.com/mikeleppane/uvr/blob/main/LICENSE)
+[![codecov](https://codecov.io/gh/mikeleppane/uvr/branch/main/graph/badge.svg)](https://codecov.io/gh/mikeleppane/uvr)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Type checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](https://mypy-lang.org/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 
 **A modern Python task runner built for the [uv](https://docs.astral.sh/uv/) era.**
 
-pt solves the common pain points of running Python scripts:
+uvr solves the common pain points of running Python scripts:
 
 - ✅ **No virtual environment activation** - `uv` handles it automatically
 - ✅ **No PYTHONPATH headaches** - configure once, use everywhere
@@ -43,7 +43,7 @@ pt solves the common pain points of running Python scripts:
 - 💾 **Built-in env vars**: Automatic context variables (project root, git info, CI detection)
 - 🔒 **Private tasks**: Hide implementation details (tasks starting with `_`)
 - 🌍 **.env file support**: Load environment variables from files
-- 🔍 **Config discovery**: Automatically finds `pt.toml` in parent directories
+- 🔍 **Config discovery**: Automatically finds `uvr.toml` in parent directories
 
 ### ✨ New Features
 
@@ -56,7 +56,7 @@ pt solves the common pain points of running Python scripts:
 
 ### Prerequisites
 
-**pt requires [uv](https://docs.astral.sh/uv/) to be installed.** Install it first:
+**uvr requires [uv](https://docs.astral.sh/uv/) to be installed.** Install it first:
 
 ```bash
 # Linux/macOS
@@ -69,24 +69,24 @@ powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
 pip install uv
 ```
 
-### Install pt
+### Install uvr
 
 ```bash
 # Using uv (recommended)
-uv tool install pt
+uv tool install uvr
 
 # Using pip
-pip install pt
+pip install uvr
 
 # From source
-git clone https://github.com/mikeleppane/pt
-cd pt
+git clone https://github.com/mikeleppane/uvr
+cd uvr
 uv pip install -e .
 ```
 
 ## Quick Start
 
-1. Create a `pt.toml` in your project root:
+1. Create a `uvr.toml` in your project root:
 
 ```toml
 [project]
@@ -97,7 +97,7 @@ PYTHONPATH = ["src"]
 
 [tasks.hello]
 description = "Print hello world"
-cmd = "python -c 'print(\"Hello from pt!\")'"
+cmd = "python -c 'print(\"Hello from uvr!\")'"
 
 [tasks.test]
 description = "Run tests"
@@ -109,8 +109,8 @@ pythonpath = ["src", "tests"]
 2. Run a task:
 
 ```bash
-pt run hello
-pt run test
+uvr run hello
+uvr run test
 ```
 
 ## New Features ✨
@@ -246,22 +246,22 @@ Run commands directly from CLI without defining them in config:
 
 ```bash
 # Simple inline command
-pt run --inline "pytest tests/"
+uvr run --inline "pytest tests/"
 
 # With environment variables
-pt run --inline "python deploy.py" --env STAGE=prod --env DEBUG=0
+uvr run --inline "python deploy.py" --env STAGE=prod --env DEBUG=0
 
 # With working directory
-pt run --inline "make build" --cwd workspace/
+uvr run --inline "make build" --cwd workspace/
 
 # With Python version
-pt run --inline "python script.py" --python 3.11
+uvr run --inline "python script.py" --python 3.11
 
 # With timeout
-pt run --inline "long-task.py" --timeout 300
+uvr run --inline "long-task.py" --timeout 300
 
 # All together
-pt run --inline "pytest tests/" \
+uvr run --inline "pytest tests/" \
   --env CI=1 \
   --cwd tests/ \
   --timeout 60 \
@@ -278,21 +278,21 @@ pt run --inline "pytest tests/" \
 **With config integration:**
 ```bash
 # Config has: [project] runner = "dotenv run"
-pt run --inline "python app.py"
+uvr run --inline "python app.py"
 # Runs: dotenv run python app.py
 
 # Use specific profile
-pt run --inline "deploy.sh" --profile prod --env VERSION=2.0
+uvr run --inline "deploy.sh" --profile prod --env VERSION=2.0
 ```
 
 ## Core Concepts
 
 ### Config File Location
 
-pt looks for configuration in:
+uvr looks for configuration in:
 
-1. `pt.toml` (preferred)
-2. `pyproject.toml` under `[tool.pt]`
+1. `uvr.toml` (preferred)
+2. `pyproject.toml` under `[tool.uvr]`
 
 It searches from the current directory upward.
 
@@ -337,13 +337,13 @@ dependencies = ["fastapi", "uvicorn"]
 
 ```bash
 # Use default profile (dev)
-pt run serve
+uvr run serve
 
 # Explicit profile
-pt run serve --profile prod
+uvr run serve --profile prod
 
 # Override via environment
-PT_PROFILE=ci pt run test
+UVR_PROFILE=ci uvr run test
 ```
 
 **Priority order** (later overrides earlier):
@@ -399,7 +399,7 @@ cmd = "pytest-watch"  # Overrides parent cmd
 description = "Format all code"
 cmd = "ruff format src/ tests/"
 dependencies = ["ruff"]
-aliases = ["f", "fmt"]  # Run with: pt run f
+aliases = ["f", "fmt"]  # Run with: uvr run f
 
 [tasks.lint]
 description = "Lint code"
@@ -414,7 +414,7 @@ dependencies = ["mypy"]
 aliases = ["t", "types"]
 ```
 
-**Private tasks** (start with `_`) are hidden from `pt list`:
+**Private tasks** (start with `_`) are hidden from `uvr list`:
 
 ```toml
 [tasks._setup-db]
@@ -428,16 +428,16 @@ cmd = "rm -rf .cache __pycache__"
 [tasks.ci]
 description = "Run CI checks"
 depends_on = ["_setup-db", "test", "_cleanup"]
-# _setup-db and _cleanup won't show in `pt list`
-# but are still runnable: pt run _setup-db
+# _setup-db and _cleanup won't show in `uvr list`
+# but are still runnable: uvr run _setup-db
 ```
 
 **List tasks:**
 
 ```bash
-pt list              # Shows public tasks with aliases
-pt list --all        # Shows private tasks too
-pt list --verbose    # Shows full details
+uvr list              # Shows public tasks with aliases
+uvr list --all        # Shows private tasks too
+uvr list --verbose    # Shows full details
 ```
 
 ## Configuration Reference
@@ -502,7 +502,7 @@ stages = [
 
 | Option | Type | Description |
 |--------|------|-------------|
-| `description` | string | Task description shown in `pt list` |
+| `description` | string | Task description shown in `uvr list` |
 | `script` | string | Path to Python script to run |
 | `cmd` | string | Shell command to run |
 | `args` | list | Default arguments passed to script/cmd |
@@ -548,9 +548,9 @@ after_task = "scripts/cleanup.py"              # Always cleanup temp files
 **Hook Environment Variables:**
 
 Hooks receive these special environment variables:
-- `PT_TASK_NAME`: Name of the task being run
-- `PT_HOOK_TYPE`: Type of hook (`before_task`, `after_success`, etc.)
-- `PT_TASK_EXIT_CODE`: Exit code of the task (for after hooks)
+- `UVR_TASK_NAME`: Name of the task being run
+- `UVR_HOOK_TYPE`: Type of hook (`before_task`, `after_success`, etc.)
+- `UVR_TASK_EXIT_CODE`: Exit code of the task (for after hooks)
 
 Hooks also inherit the task's environment variables and PYTHONPATH.
 
@@ -593,14 +593,14 @@ The error handler receives special environment variables about the failure:
 [tasks.notify-failure]
 description = "Send failure notification"
 cmd = "bash"
-args = ["-c", "echo Failed task: $PT_FAILED_TASK with code $PT_ERROR_CODE"]
+args = ["-c", "echo Failed task: $UVR_FAILED_TASK with code $UVR_ERROR_CODE"]
 ```
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `PT_FAILED_TASK` | Name of the task that failed | `deploy` |
-| `PT_ERROR_CODE` | Exit code of the failed task | `1` |
-| `PT_ERROR_STDERR` | Error output from the failed task | `Connection refused` |
+| `UVR_FAILED_TASK` | Name of the task that failed | `deploy` |
+| `UVR_ERROR_CODE` | Exit code of the failed task | `1` |
+| `UVR_ERROR_STDERR` | Error output from the failed task | `Connection refused` |
 
 **Important Notes:**
 
@@ -660,19 +660,19 @@ tags = ["production", "dangerous"]
 
 ```bash
 # List tasks with specific tag
-pt list --tag ci
+uvr list --tag ci
 
 # List tasks with multiple tags (AND logic)
-pt list --tag ci --tag fast
+uvr list --tag ci --tag fast
 
 # List tasks with any of the tags (OR logic)
-pt list --tag fast --tag slow --match-any
+uvr list --tag fast --tag slow --match-any
 
 # Run all tasks with a tag
-pt multi --tag ci --parallel
+uvr multi --tag ci --parallel
 
 # List all available tags
-pt tags
+uvr tags
 ```
 
 **Tag Inheritance:**
@@ -724,13 +724,13 @@ category = "deployment"
 
 ```bash
 # List tasks in a category
-pt list --category testing
+uvr list --category testing
 
 # Run all tasks in a category
-pt multi --category quality
+uvr multi --category quality
 
 # Run all quality checks in parallel
-pt multi --category quality --parallel
+uvr multi --category quality --parallel
 ```
 
 **Category Inheritance:**
@@ -812,7 +812,7 @@ from rich import print
 # Your code here
 ```
 
-pt merges inline dependencies with task config (task config takes precedence).
+uvr merges inline dependencies with task config (task config takes precedence).
 
 ## CLI Reference
 
@@ -820,60 +820,60 @@ pt merges inline dependencies with task config (task config takes precedence).
 
 ```bash
 # Run a task
-pt run <task> [args...]
-pt run test
-pt run test --verbose
-pt run t                    # Using alias
+uvr run <task> [args...]
+uvr run test
+uvr run test --verbose
+uvr run t                    # Using alias
 
 # Run with specific profile
-pt run serve --profile prod
-pt run test -p ci
+uvr run serve --profile prod
+uvr run test -p ci
 
-# Run a script with pt context
-pt exec script.py [args...]
-pt exec script.py --profile dev
+# Run a script with uvr context
+uvr exec script.py [args...]
+uvr exec script.py --profile dev
 
 # Run multiple tasks
-pt multi task1 task2 task3 --parallel
-pt multi task1 task2 --sequential --on-failure=continue
-pt multi --tag ci --parallel          # Run all tasks with 'ci' tag
-pt multi --tag ci --tag fast          # Run tasks with both tags (AND)
-pt multi --tag fast --tag slow --match-any  # Run tasks with either tag (OR)
+uvr multi task1 task2 task3 --parallel
+uvr multi task1 task2 --sequential --on-failure=continue
+uvr multi --tag ci --parallel          # Run all tasks with 'ci' tag
+uvr multi --tag ci --tag fast          # Run tasks with both tags (AND)
+uvr multi --tag fast --tag slow --match-any  # Run tasks with either tag (OR)
 
 # Run a pipeline
-pt pipeline ci
-pt pipeline deploy --profile prod
+uvr pipeline ci
+uvr pipeline deploy --profile prod
 
 # Watch for changes and re-run
-pt watch test                        # Watch *.py files
-pt watch test -p "src/**/*.py"       # Custom pattern
-pt watch test -p "**/*.py" -p "**/*.toml"  # Multiple patterns
-pt watch lint --no-clear             # Don't clear screen
-pt watch test --profile dev          # With profile
+uvr watch test                        # Watch *.py files
+uvr watch test -p "src/**/*.py"       # Custom pattern
+uvr watch test -p "**/*.py" -p "**/*.toml"  # Multiple patterns
+uvr watch lint --no-clear             # Don't clear screen
+uvr watch test --profile dev          # With profile
 
 # Inspect task details
-pt explain <task>           # Show resolved task configuration
-pt explain test             # View task inheritance, env, dependencies
-pt explain t --profile dev  # View with profile applied
+uvr explain <task>           # Show resolved task configuration
+uvr explain test             # View task inheritance, env, dependencies
+uvr explain t --profile dev  # View with profile applied
 
 # List tasks and pipelines
-pt list                    # Public tasks only
-pt list --all              # Include private tasks (_prefix)
-pt list --verbose          # Show full details
-pt list -v -a              # Verbose + all tasks
-pt list --tag ci           # Filter by tag
-pt list --tag ci --tag fast  # Filter by multiple tags (AND)
-pt list --tag fast --tag slow --match-any  # Filter by tags (OR)
+uvr list                    # Public tasks only
+uvr list --all              # Include private tasks (_prefix)
+uvr list --verbose          # Show full details
+uvr list -v -a              # Verbose + all tasks
+uvr list --tag ci           # Filter by tag
+uvr list --tag ci --tag fast  # Filter by multiple tags (AND)
+uvr list --tag fast --tag slow --match-any  # Filter by tags (OR)
 
 # List all tags
-pt tags                    # Show all tags with task counts
+uvr tags                    # Show all tags with task counts
 
 # Validate configuration
-pt check                   # Validate config with warnings
+uvr check                   # Validate config with warnings
 
 # Initialize new config
-pt init
-pt init --force            # Overwrite existing
+uvr init
+uvr init --force            # Overwrite existing
 ```
 
 ### Global Options
@@ -888,38 +888,38 @@ Available on most commands:
 
 ### Command-Specific Options
 
-**`pt run` / `pt exec` / `pt watch`:**
+**`uvr run` / `uvr exec` / `uvr watch`:**
 
 - `-p, --profile PROFILE` - Profile to use
 - `-v, --verbose` - Show verbose output
 - `-c, --config PATH` - Config file path
 
-**`pt multi`:**
+**`uvr multi`:**
 
 - `--parallel` - Run tasks in parallel
 - `--sequential` - Run tasks sequentially (default)
 - `--on-failure MODE` - `fail-fast` (default), `wait`, or `continue`
 - `--output MODE` - `buffered` (default) or `interleaved`
 
-**`pt list`:**
+**`uvr list`:**
 
 - `-a, --all` - **NEW:** Show private tasks (starting with `_`)
 - `-v, --verbose` - Show aliases, dependencies, and descriptions
 
-**`pt watch`:**
+**`uvr watch`:**
 
 - `--pattern PATTERN` - File pattern to watch (can specify multiple)
 - `-i, --ignore PATTERN` - Patterns to ignore
 - `--debounce SECONDS` - Debounce time (default: 0.5)
 - `--no-clear` - Don't clear screen on changes
 
-### Task Inspection (`pt explain`)
+### Task Inspection (`uvr explain`)
 
-The `pt explain` command shows detailed information about a task, including resolved configuration after inheritance and variable interpolation:
+The `uvr explain` command shows detailed information about a task, including resolved configuration after inheritance and variable interpolation:
 
 ```bash
-pt explain test
-pt explain test --profile ci
+uvr explain test
+uvr explain test --profile ci
 ```
 
 **Output includes:**
@@ -943,7 +943,7 @@ pt explain test --profile ci
 ```text
 Task: test-cov
 Description: Run tests with coverage
-Config: /home/user/project/pt.toml
+Config: /home/user/project/uvr.toml
 Inheritance: test-cov → test
 
 Type: command
@@ -962,13 +962,13 @@ Tags: ci, testing
 Aliases: tc
 ```
 
-### Configuration Validation (`pt check`)
+### Configuration Validation (`uvr check`)
 
-The `pt check` command validates your configuration file and reports errors and warnings:
+The `uvr check` command validates your configuration file and reports errors and warnings:
 
 ```bash
-pt check
-pt check -c custom.toml
+uvr check
+uvr check -c custom.toml
 ```
 
 **Validation includes:**
@@ -987,7 +987,7 @@ pt check -c custom.toml
 **Example output:**
 
 ```text
-✓ Configuration valid: /home/user/project/pt.toml
+✓ Configuration valid: /home/user/project/uvr.toml
   Project: my-project
   Tasks: 15
   Pipelines: 2
@@ -1012,37 +1012,37 @@ Warnings:
 
 **User-Set Variables:**
 
-- `PT_PROFILE` - Default profile to use (overridden by `--profile`)
-- `PYTHONPATH` - Merged with pt's PYTHONPATH configuration
+- `UVR_PROFILE` - Default profile to use (overridden by `--profile`)
+- `PYTHONPATH` - Merged with uvr's PYTHONPATH configuration
 
 **Built-in Variables (Automatically Set):**
 
-pt automatically sets these environment variables for all tasks:
+uvr automatically sets these environment variables for all tasks:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `PT_TASK_NAME` | Canonical task name (even if called via alias) | `test` |
-| `PT_PROJECT_ROOT` | Absolute path to project root | `/home/user/project` |
-| `PT_CONFIG_FILE` | Path to config file | `/home/user/project/pt.toml` |
-| `PT_PROFILE` | Active profile name (if using --profile) | `dev` |
-| `PT_PYTHON_VERSION` | Python version from config | `3.11` |
-| `PT_CATEGORY` | Task category (if set) | `testing` |
-| `PT_TAGS` | Comma-separated task tags (sorted) | `ci,fast,unit` |
-| `PT_CI` | `"true"` if running in CI environment | `true` |
-| `PT_GIT_BRANCH` | Current git branch (best effort) | `main` |
-| `PT_GIT_COMMIT` | Current git commit SHA (best effort) | `abc123...` |
+| `UVR_TASK_NAME` | Canonical task name (even if called via alias) | `test` |
+| `UVR_PROJECT_ROOT` | Absolute path to project root | `/home/user/project` |
+| `UVR_CONFIG_FILE` | Path to config file | `/home/user/project/uvr.toml` |
+| `UVR_PROFILE` | Active profile name (if using --profile) | `dev` |
+| `UVR_PYTHON_VERSION` | Python version from config | `3.11` |
+| `UVR_CATEGORY` | Task category (if set) | `testing` |
+| `UVR_TAGS` | Comma-separated task tags (sorted) | `ci,fast,unit` |
+| `UVR_CI` | `"true"` if running in CI environment | `true` |
+| `UVR_GIT_BRANCH` | Current git branch (best effort) | `main` |
+| `UVR_GIT_COMMIT` | Current git commit SHA (best effort) | `abc123...` |
 
 Use these variables in your tasks:
 
 ```toml
 [tasks.deploy]
 description = "Deploy from current branch"
-cmd = "echo Deploying from $PT_GIT_BRANCH"
+cmd = "echo Deploying from $UVR_GIT_BRANCH"
 
 [tasks.show-context]
 description = "Show task context"
 script = "scripts/show_context.py"
-# Script will have access to all PT_* variables
+# Script will have access to all UVR_* variables
 ```
 
 **Note:** Built-in variables have the lowest priority. User-defined variables (in `env` sections) can override them if needed.
@@ -1101,7 +1101,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v3
-      - run: uvx pt pipeline ci --profile ci
+      - run: uvx uvr pipeline ci --profile ci
 ```
 
 ### Multi-Environment Development
@@ -1148,14 +1148,14 @@ condition = { env_set = ["DEPLOY_KEY"] }
 
 ```bash
 # Development
-pt run serve                    # Uses default dev profile
-pt run s                        # Using alias
+uvr run serve                    # Uses default dev profile
+uvr run s                        # Using alias
 
 # Staging
-pt run serve --profile staging
+uvr run serve --profile staging
 
 # Production
-pt run deploy --profile prod
+uvr run deploy --profile prod
 ```
 
 ### DRY Task Definitions
@@ -1232,7 +1232,7 @@ aliases = ["pc"]
 
 ```bash
 #!/bin/sh
-pt run pre-commit || exit 1
+uvr run pre-commit || exit 1
 ```
 
 ### Complex Workflows
@@ -1291,28 +1291,28 @@ stages = [
 
 ```bash
 # Development
-pt run process
+uvr run process
 
 # Production
-pt pipeline production --profile prod
+uvr pipeline production --profile prod
 ```
 
 ## Shell Completion
 
-pt supports tab completion for Bash, Zsh, and Fish shells. Completions are context-aware and dynamically load task names, profile names, and pipeline names from your `pt.toml`.
+uvr supports tab completion for Bash, Zsh, and Fish shells. Completions are context-aware and dynamically load task names, profile names, and pipeline names from your `uvr.toml`.
 
 ### Bash
 
 Add to `~/.bashrc`:
 
 ```bash
-eval "$(_PT_COMPLETE=bash_source pt)"
+eval "$(_PT_COMPLETE=bash_source uvr)"
 ```
 
 Or install the completion file:
 
 ```bash
-_PT_COMPLETE=bash_source pt > ~/.local/share/bash-completion/completions/pt
+_PT_COMPLETE=bash_source uvr > ~/.local/share/bash-completion/completions/uvr
 ```
 
 ### Zsh
@@ -1320,20 +1320,20 @@ _PT_COMPLETE=bash_source pt > ~/.local/share/bash-completion/completions/pt
 Add to `~/.zshrc`:
 
 ```zsh
-eval "$(_PT_COMPLETE=zsh_source pt)"
+eval "$(_PT_COMPLETE=zsh_source uvr)"
 ```
 
 Or install the completion file:
 
 ```zsh
-_PT_COMPLETE=zsh_source pt > ~/.zsh/completions/_pt
+_PT_COMPLETE=zsh_source uvr > ~/.zsh/completions/_pt
 # Ensure ~/.zsh/completions is in your $fpath
 ```
 
 ### Fish
 
 ```fish
-_PT_COMPLETE=fish_source pt > ~/.config/fish/completions/pt.fish
+_PT_COMPLETE=fish_source uvr > ~/.config/fish/completions/uvr.fish
 ```
 
 ### Completion Features
@@ -1342,7 +1342,7 @@ _PT_COMPLETE=fish_source pt > ~/.config/fish/completions/pt.fish
 - **Profile names** - Complete configured profiles (dev, ci, prod, etc.)
 - **Pipeline names** - Complete defined pipelines
 - **CLI options** - Complete all flags and options
-- **Contextual** - Completions adapt to your `pt.toml` configuration
+- **Contextual** - Completions adapt to your `uvr.toml` configuration
 
 ## Development
 
@@ -1352,8 +1352,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing, and contr
 
 ```bash
 # Clone and setup
-git clone https://github.com/your-username/pt.git
-cd pt
+git clone https://github.com/your-username/uvr.git
+cd uvr
 uv sync --all-extras
 uv run pre-commit install
 
@@ -1364,7 +1364,7 @@ uv run pytest tests/
 uv run ruff format src/ tests/
 uv run ruff check src/ tests/
 uv run mypy src/
-uv run pytest tests/ --cov=src/pt
+uv run pytest tests/ --cov=src/uvr
 ```
 
 ## Contributing

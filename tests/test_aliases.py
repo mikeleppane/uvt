@@ -5,12 +5,12 @@ from pathlib import Path
 
 import pytest
 
-from pt.config import ConfigError, load_config, resolve_task_name
+from uvr.config import ConfigError, load_config, resolve_task_name
 
 
 def test_alias_resolution_by_name(tmp_path: Path) -> None:
     """Test that task names resolve to themselves."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -28,7 +28,7 @@ def test_alias_resolution_by_name(tmp_path: Path) -> None:
 
 def test_alias_resolution_by_alias(tmp_path: Path) -> None:
     """Test that aliases resolve to task names."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -47,7 +47,7 @@ def test_alias_resolution_by_alias(tmp_path: Path) -> None:
 
 def test_alias_resolution_unknown_task(tmp_path: Path) -> None:
     """Test that unknown tasks raise ValueError with suggestions."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -66,7 +66,7 @@ def test_alias_resolution_unknown_task(tmp_path: Path) -> None:
 
 def test_duplicate_alias_rejected(tmp_path: Path) -> None:
     """Test that duplicate aliases are rejected."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -88,7 +88,7 @@ def test_duplicate_alias_rejected(tmp_path: Path) -> None:
 
 def test_alias_conflicts_with_task_name(tmp_path: Path) -> None:
     """Test that alias cannot conflict with task name."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -109,7 +109,7 @@ def test_alias_conflicts_with_task_name(tmp_path: Path) -> None:
 
 def test_multiple_aliases_same_task(tmp_path: Path) -> None:
     """Test that multiple aliases can point to the same task."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -129,7 +129,7 @@ def test_multiple_aliases_same_task(tmp_path: Path) -> None:
 
 def test_aliases_across_multiple_tasks(tmp_path: Path) -> None:
     """Test that aliases work across multiple tasks."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -157,7 +157,7 @@ def test_aliases_across_multiple_tasks(tmp_path: Path) -> None:
 
 def test_alias_in_depends_on(tmp_path: Path) -> None:
     """Test that aliases work in depends_on field."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -181,7 +181,7 @@ def test_alias_in_depends_on(tmp_path: Path) -> None:
 
 def test_empty_aliases_list(tmp_path: Path) -> None:
     """Test that empty aliases list is valid."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -199,7 +199,7 @@ def test_empty_aliases_list(tmp_path: Path) -> None:
 
 def test_task_without_aliases(tmp_path: Path) -> None:
     """Test that tasks without aliases work normally."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -217,7 +217,7 @@ def test_task_without_aliases(tmp_path: Path) -> None:
 
 def test_get_task_by_alias(tmp_path: Path) -> None:
     """Test that get_task works with aliases."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]

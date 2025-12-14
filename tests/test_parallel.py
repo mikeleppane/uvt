@@ -7,9 +7,9 @@ import asyncio
 import pytest
 from rich.console import Console
 
-from pt.executor import ExecutionResult, OutputMode
-from pt.models import OnFailure
-from pt.parallel import (
+from uvr.executor import ExecutionResult, OutputMode
+from uvr.models import OnFailure
+from uvr.parallel import (
     ParallelExecutor,
     SequentialExecutor,
     TaskStatus,

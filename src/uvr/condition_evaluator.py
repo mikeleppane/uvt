@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pt.models import ConditionConfig
+    from uvr.models import ConditionConfig
 
 
 class ConditionEvaluator:

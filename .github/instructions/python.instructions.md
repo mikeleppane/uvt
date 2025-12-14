@@ -313,13 +313,13 @@ console.print(table)
 from pathlib import Path
 
 # ✅ CORRECT
-config_path = Path("pt.toml")
+config_path = Path("uvr.toml")
 script_path = Path(task.script)
 resolved = (project_root / script_path).resolve()
 
 # ❌ WRONG
 import os.path
-config_path = "pt.toml"
+config_path = "uvr.toml"
 script_path = os.path.join(project_root, task.script)
 ```
 
@@ -361,7 +361,7 @@ class TestTaskHooks:
         hook_script.write_text('print("hook ran")')
 
         # Create config with dedent for TOML
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
                 [project]
@@ -401,7 +401,7 @@ async def test_parallel_execution(self, tmp_path: Path) -> None:
 ```python
 def test_config_loading(tmp_path: Path) -> None:
     """Test configuration file loading."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text('[project]\nname = "test"')
 
     config, path = load_config(config_file)
@@ -449,7 +449,7 @@ from textwrap import dedent
 @pytest.fixture
 def sample_config(tmp_path: Path) -> Path:
     """Create a sample configuration file for testing."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         dedent("""\
             [project]
@@ -824,11 +824,11 @@ full_path = root / "tasks" / "test.py"
 ```python
 # ❌ BAD
 def test_config():
-    config = load_config("/tmp/test/pt.toml")
+    config = load_config("/tmp/test/uvr.toml")
 
 # ✅ GOOD
 def test_config(tmp_path: Path):
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config = load_config(config_file)
 ```
 

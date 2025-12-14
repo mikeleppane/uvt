@@ -24,7 +24,7 @@ body:
       label: Steps to Reproduce
       description: How can we reproduce this bug? Please provide detailed steps.
       placeholder: |
-        1. Create a pt.toml with...
+        1. Create a uvr.toml with...
         2. Run 'pt run ...'
         3. Observe error...
     validations:
@@ -52,7 +52,7 @@ body:
     id: pt-config
     attributes:
       label: pt Configuration
-      description: Please provide the relevant portion of your `pt.toml` file
+      description: Please provide the relevant portion of your `uvr.toml` file
       placeholder: |
         [tasks.test]
         script = "pytest tests/"

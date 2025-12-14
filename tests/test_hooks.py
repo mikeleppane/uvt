@@ -3,7 +3,7 @@
 from pathlib import Path
 from textwrap import dedent
 
-from pt.runner import Runner
+from uvr.runner import Runner
 
 
 class TestTaskHooks:
@@ -32,7 +32,7 @@ class TestTaskHooks:
         )
 
         # Create config
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -62,7 +62,7 @@ class TestTaskHooks:
         task_script.write_text('from pathlib import Path; Path("task_ran.txt").write_text("task")')
 
         # Create config
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -103,7 +103,7 @@ class TestTaskHooks:
         task_script.write_text("print('success')")
 
         # Create config
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -142,7 +142,7 @@ class TestTaskHooks:
         task_script.write_text("import sys; sys.exit(1)")
 
         # Create config
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -174,7 +174,7 @@ class TestTaskHooks:
         task_script = tmp_path / "task.py"
         task_script.write_text("print('success')")
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -202,7 +202,7 @@ class TestTaskHooks:
         assert (tmp_path / "after_task_ran.txt").exists()
 
     def test_hook_environment_variables(self, tmp_path: Path) -> None:
-        """Test that hooks receive PT_ environment variables."""
+        """Test that hooks receive UVR_ environment variables."""
         # Create hook that checks environment variables
         hook_script = tmp_path / "check_env.py"
         hook_script.write_text(
@@ -210,9 +210,9 @@ class TestTaskHooks:
             import os
             from pathlib import Path
 
-            task_name = os.environ.get("PT_TASK_NAME")
-            hook_type = os.environ.get("PT_HOOK_TYPE")
-            exit_code = os.environ.get("PT_TASK_EXIT_CODE")
+            task_name = os.environ.get("UVR_TASK_NAME")
+            hook_type = os.environ.get("UVR_HOOK_TYPE")
+            exit_code = os.environ.get("UVR_TASK_EXIT_CODE")
 
             Path("hook_env.txt").write_text(f"{task_name},{hook_type},{exit_code}")
             """)
@@ -222,7 +222,7 @@ class TestTaskHooks:
         task_script = tmp_path / "task.py"
         task_script.write_text("print('task')")
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]
@@ -261,7 +261,7 @@ class TestTaskHooks:
         task_script = tmp_path / "task.py"
         task_script.write_text("print('task')")
 
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""\
             [project]

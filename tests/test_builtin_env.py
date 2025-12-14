@@ -4,13 +4,13 @@ import os
 import textwrap
 from pathlib import Path
 
-from pt.config import load_config
-from pt.runner import Runner, _detect_ci_environment, _get_git_info
+from uvr.config import load_config
+from uvr.runner import Runner, _detect_ci_environment, _get_git_info
 
 
 def test_builtin_env_essential_variables(tmp_path: Path) -> None:
     """Test that essential built-in env vars are set."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -26,14 +26,14 @@ def test_builtin_env_essential_variables(tmp_path: Path) -> None:
 
     builtin_env = runner._build_builtin_env("test", config.tasks["test"])
 
-    assert builtin_env["PT_TASK_NAME"] == "test"
-    assert builtin_env["PT_PROJECT_ROOT"] == str(tmp_path)
-    assert builtin_env["PT_CONFIG_FILE"] == str(config_file)
+    assert builtin_env["UVR_TASK_NAME"] == "test"
+    assert builtin_env["UVR_PROJECT_ROOT"] == str(tmp_path)
+    assert builtin_env["UVR_CONFIG_FILE"] == str(config_file)
 
 
 def test_builtin_env_with_profile(tmp_path: Path) -> None:
-    """Test that PT_PROFILE is set when using a profile."""
-    config_file = tmp_path / "pt.toml"
+    """Test that UVR_PROFILE is set when using a profile."""
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -52,12 +52,12 @@ def test_builtin_env_with_profile(tmp_path: Path) -> None:
 
     builtin_env = runner._build_builtin_env("test", config.tasks["test"])
 
-    assert builtin_env["PT_PROFILE"] == "dev"
+    assert builtin_env["UVR_PROFILE"] == "dev"
 
 
 def test_builtin_env_without_profile(tmp_path: Path) -> None:
-    """Test that PT_PROFILE is not set when not using a profile."""
-    config_file = tmp_path / "pt.toml"
+    """Test that UVR_PROFILE is not set when not using a profile."""
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -73,12 +73,12 @@ def test_builtin_env_without_profile(tmp_path: Path) -> None:
 
     builtin_env = runner._build_builtin_env("test", config.tasks["test"])
 
-    assert "PT_PROFILE" not in builtin_env
+    assert "UVR_PROFILE" not in builtin_env
 
 
 def test_builtin_env_with_python_version(tmp_path: Path) -> None:
-    """Test that PT_PYTHON_VERSION is set from project config."""
-    config_file = tmp_path / "pt.toml"
+    """Test that UVR_PYTHON_VERSION is set from project config."""
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -95,12 +95,12 @@ def test_builtin_env_with_python_version(tmp_path: Path) -> None:
 
     builtin_env = runner._build_builtin_env("test", config.tasks["test"])
 
-    assert builtin_env["PT_PYTHON_VERSION"] == "3.11"
+    assert builtin_env["UVR_PYTHON_VERSION"] == "3.11"
 
 
 def test_builtin_env_with_task_python_version(tmp_path: Path) -> None:
     """Test that task-level python version overrides project level."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -118,12 +118,12 @@ def test_builtin_env_with_task_python_version(tmp_path: Path) -> None:
 
     builtin_env = runner._build_builtin_env("test", config.tasks["test"])
 
-    assert builtin_env["PT_PYTHON_VERSION"] == "3.12"
+    assert builtin_env["UVR_PYTHON_VERSION"] == "3.12"
 
 
 def test_builtin_env_with_tags(tmp_path: Path) -> None:
-    """Test that PT_TAGS is set and sorted."""
-    config_file = tmp_path / "pt.toml"
+    """Test that UVR_TAGS is set and sorted."""
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -140,12 +140,12 @@ def test_builtin_env_with_tags(tmp_path: Path) -> None:
 
     builtin_env = runner._build_builtin_env("test", config.tasks["test"])
 
-    assert builtin_env["PT_TAGS"] == "ci,fast,unit"  # Alphabetically sorted
+    assert builtin_env["UVR_TAGS"] == "ci,fast,unit"  # Alphabetically sorted
 
 
 def test_builtin_env_without_tags(tmp_path: Path) -> None:
-    """Test that PT_TAGS is not set when task has no tags."""
-    config_file = tmp_path / "pt.toml"
+    """Test that UVR_TAGS is not set when task has no tags."""
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -161,7 +161,7 @@ def test_builtin_env_without_tags(tmp_path: Path) -> None:
 
     builtin_env = runner._build_builtin_env("test", config.tasks["test"])
 
-    assert "PT_TAGS" not in builtin_env
+    assert "UVR_TAGS" not in builtin_env
 
 
 def test_detect_ci_environment_github_actions() -> None:
@@ -240,7 +240,7 @@ def test_get_git_info_returns_tuple() -> None:
 
 def test_builtin_env_integrated_into_task(tmp_path: Path) -> None:
     """Test that builtin env vars are included in task command."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -259,16 +259,16 @@ def test_builtin_env_integrated_into_task(tmp_path: Path) -> None:
     cmd = runner.build_command(config.tasks["test"], "test")
 
     # Check that builtin env vars are in the final command env
-    assert cmd.env["PT_TASK_NAME"] == "test"
-    assert cmd.env["PT_PROJECT_ROOT"] == str(tmp_path)
-    assert cmd.env["PT_CONFIG_FILE"] == str(config_file)
-    assert cmd.env["PT_PYTHON_VERSION"] == "3.11"
-    assert cmd.env["PT_TAGS"] == "ci"
+    assert cmd.env["UVR_TASK_NAME"] == "test"
+    assert cmd.env["UVR_PROJECT_ROOT"] == str(tmp_path)
+    assert cmd.env["UVR_CONFIG_FILE"] == str(config_file)
+    assert cmd.env["UVR_PYTHON_VERSION"] == "3.11"
+    assert cmd.env["UVR_TAGS"] == "ci"
 
 
 def test_builtin_env_does_not_override_user_env(tmp_path: Path) -> None:
     """Test that user-defined env vars can override builtin vars."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -276,7 +276,7 @@ def test_builtin_env_does_not_override_user_env(tmp_path: Path) -> None:
 
             [tasks.test]
             cmd = "echo test"
-            env = { PT_TASK_NAME = "custom" }
+            env = { UVR_TASK_NAME = "custom" }
         """)
     )
 
@@ -286,4 +286,4 @@ def test_builtin_env_does_not_override_user_env(tmp_path: Path) -> None:
     cmd = runner.build_command(config.tasks["test"], "test")
 
     # Task env should override builtin
-    assert cmd.env["PT_TASK_NAME"] == "custom"
+    assert cmd.env["UVR_TASK_NAME"] == "custom"

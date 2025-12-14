@@ -3,13 +3,13 @@
 import textwrap
 from pathlib import Path
 
-from pt.config import load_config
-from pt.runner import Runner
+from uvr.config import load_config
+from uvr.runner import Runner
 
 
 def test_error_handler_runs_on_failure(tmp_path: Path) -> None:
     """Test that error handler runs when task fails."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     log_file = tmp_path / "error.log"
 
     config_file.write_text(
@@ -42,7 +42,7 @@ def test_error_handler_runs_on_failure(tmp_path: Path) -> None:
 
 def test_error_handler_not_run_on_success(tmp_path: Path) -> None:
     """Test that error handler doesn't run for successful tasks."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     log_file = tmp_path / "error.log"
 
     config_file.write_text(
@@ -73,7 +73,7 @@ def test_error_handler_not_run_on_success(tmp_path: Path) -> None:
 
 def test_error_handler_skipped_for_ignore_errors(tmp_path: Path) -> None:
     """Test that error handler doesn't run for ignore_errors tasks."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     log_file = tmp_path / "error.log"
 
     config_file.write_text(
@@ -104,8 +104,8 @@ def test_error_handler_skipped_for_ignore_errors(tmp_path: Path) -> None:
 
 
 def test_error_handler_receives_context_vars(tmp_path: Path) -> None:
-    """Test that error handler receives PT_FAILED_TASK, PT_ERROR_CODE, PT_ERROR_STDERR."""
-    config_file = tmp_path / "pt.toml"
+    """Test that error handler receives UVR_FAILED_TASK, UVR_ERROR_CODE, UVR_ERROR_STDERR."""
+    config_file = tmp_path / "uvr.toml"
     log_file = tmp_path / "context.log"
 
     config_file.write_text(
@@ -120,7 +120,7 @@ def test_error_handler_receives_context_vars(tmp_path: Path) -> None:
 
             [tasks.log_error]
             cmd = "bash"
-            args = ["-c", "env | grep '^PT_' > {log_file}"]
+            args = ["-c", "env | grep '^UVR_' > {log_file}"]
         """)
     )
 
@@ -133,14 +133,14 @@ def test_error_handler_receives_context_vars(tmp_path: Path) -> None:
     # Check that error handler received context vars
     assert log_file.exists()
     content = log_file.read_text()
-    assert "PT_FAILED_TASK=failing" in content
-    assert "PT_ERROR_CODE=42" in content
-    assert "PT_ERROR_STDERR" in content
+    assert "UVR_FAILED_TASK=failing" in content
+    assert "UVR_ERROR_CODE=42" in content
+    assert "UVR_ERROR_STDERR" in content
 
 
 def test_error_handler_not_configured(tmp_path: Path) -> None:
     """Test that no error handler runs when not configured."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
 
     config_file.write_text(
         textwrap.dedent("""
@@ -163,7 +163,7 @@ def test_error_handler_not_configured(tmp_path: Path) -> None:
 
 def test_error_handler_task_not_found(tmp_path: Path) -> None:
     """Test that missing error handler is handled gracefully."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
 
     config_file.write_text(
         textwrap.dedent("""
@@ -186,7 +186,7 @@ def test_error_handler_task_not_found(tmp_path: Path) -> None:
 
 def test_error_handler_itself_fails(tmp_path: Path) -> None:
     """Test that error handler failure doesn't crash."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     log_file = tmp_path / "attempted.log"
 
     config_file.write_text(
@@ -217,7 +217,7 @@ def test_error_handler_itself_fails(tmp_path: Path) -> None:
 
 def test_error_handler_recursive_prevention(tmp_path: Path) -> None:
     """Test that error handler doesn't run for itself (infinite loop prevention)."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     log_file = tmp_path / "recursive.log"
 
     config_file.write_text(
@@ -245,7 +245,7 @@ def test_error_handler_recursive_prevention(tmp_path: Path) -> None:
 
 def test_error_handler_with_multiple_failures(tmp_path: Path) -> None:
     """Test error handler with multiple task failures."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     log_file = tmp_path / "errors.log"
 
     config_file.write_text(
@@ -264,7 +264,7 @@ def test_error_handler_with_multiple_failures(tmp_path: Path) -> None:
 
             [tasks.log_error]
             cmd = "bash"
-            args = ["-c", "echo \\\"$PT_FAILED_TASK:$PT_ERROR_CODE\\\" >> {log_file}"]
+            args = ["-c", "echo \\\"$UVR_FAILED_TASK:$UVR_ERROR_CODE\\\" >> {log_file}"]
         """)
     )
 
@@ -286,7 +286,7 @@ def test_error_handler_with_multiple_failures(tmp_path: Path) -> None:
 
 def test_error_handler_optional_field(tmp_path: Path) -> None:
     """Test that on_error_task is optional."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
 
     config_file.write_text(
         textwrap.dedent("""

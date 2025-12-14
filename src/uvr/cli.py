@@ -10,12 +10,12 @@ import click
 from rich.console import Console
 from rich.table import Table
 
-from pt import __version__
-from pt.completion import complete_pipeline_name, complete_profile_name, complete_task_name
-from pt.config import ConfigError, ConfigNotFoundError, load_config
-from pt.executor import ExecutionResult, check_uv_installed
-from pt.models import OnFailure, OutputMode, PtConfig
-from pt.runner import Runner
+from uvr import __version__
+from uvr.completion import complete_pipeline_name, complete_profile_name, complete_task_name
+from uvr.config import ConfigError, ConfigNotFoundError, load_config
+from uvr.executor import ExecutionResult, check_uv_installed
+from uvr.models import OnFailure, OutputMode, UvrConfig
+from uvr.runner import Runner
 
 # Heavy imports loaded lazily inside commands that use them:
 # - pt.watch (only for watch command)
@@ -88,15 +88,15 @@ def _run_inline_task(
     Returns:
         ExecutionResult from execution
     """
-    from pt.config import (
+    from uvr.config import (
         ConfigNotFoundError,
         build_profile_env,
         get_effective_runner,
         get_project_root,
         load_config,
     )
-    from pt.executor import UvCommand, execute_sync
-    from pt.models import TaskConfig
+    from uvr.executor import UvCommand, execute_sync
+    from uvr.models import TaskConfig
 
     # Parse environment variables
     parsed_env: dict[str, str] = {}
@@ -147,7 +147,7 @@ def _run_inline_task(
     # Determine Python version
     effective_python = python_version
     if not effective_python and config:
-        from pt.config import get_profile_python
+        from uvr.config import get_profile_python
 
         effective_python = get_profile_python(config, profile)
 
@@ -168,7 +168,7 @@ def _run_inline_task(
     result = execute_sync(command, capture_output=not verbose, timeout=timeout)
 
     if verbose or not result.success:
-        from pt.parallel import print_task_output
+        from uvr.parallel import print_task_output
 
         print_task_output("inline", result, console)
 
@@ -240,7 +240,7 @@ def run(
     timeout: int | None,
     python_version: str | None,
 ) -> None:
-    """Run a task defined in pt.toml or inline.
+    """Run a task defined in uvr.toml or inline.
 
     TASK_NAME is the name of the task to run (not needed with --inline).
     Additional ARGS are passed to the task's script/command.
@@ -279,7 +279,7 @@ def run(
     runner = Runner.from_config_file(config_path, verbose=verbose, profile=profile)
 
     # Resolve alias to task name
-    from pt.config import resolve_task_name
+    from uvr.config import resolve_task_name
 
     try:
         resolved_task_name = resolve_task_name(runner.config, task_name)
@@ -320,7 +320,7 @@ def exec_script(
     Additional ARGS are passed to the script.
 
     The script will inherit global environment variables and PYTHONPATH
-    from pt.toml, and can use PEP 723 inline metadata for dependencies.
+    from uvr.toml, and can use PEP 723 inline metadata for dependencies.
     """
     if not check_uv_installed():
         print_uv_not_installed_error()
@@ -417,7 +417,7 @@ def multi(
             sys.exit(0)
     elif task_names:
         # Run tasks by name - resolve aliases
-        from pt.config import resolve_task_name
+        from uvr.config import resolve_task_name
 
         # Resolve all task names/aliases upfront
         try:
@@ -467,7 +467,7 @@ def multi(
 def pipeline(
     pipeline_name: str, verbose: bool, profile: str | None, config_path: Path | None
 ) -> None:
-    """Run a pipeline defined in pt.toml.
+    """Run a pipeline defined in uvr.toml.
 
     PIPELINE_NAME is the name of the pipeline to run.
     """
@@ -652,7 +652,7 @@ def watch(
     Additional ARGS are passed to the task's script/command.
     """
     # Lazy import - only load watch module when needed
-    from pt.watch import WatchConfig, watch_and_run_sync
+    from uvr.watch import WatchConfig, watch_and_run_sync
 
     if not check_uv_installed():
         print_uv_not_installed_error()
@@ -693,7 +693,7 @@ def explain(task_name: str, profile: str | None, config_path: Path | None) -> No
     Displays the resolved task configuration including inheritance chain,
     environment variables, dependencies, and effective command.
     """
-    from pt.config import (
+    from uvr.config import (
         apply_variable_interpolation,
         build_profile_env,
         get_effective_profile,
@@ -891,7 +891,7 @@ def explain(task_name: str, profile: str | None, config_path: Path | None) -> No
     console.print()
 
 
-def _load_raw_config(config_path: Path) -> PtConfig:
+def _load_raw_config(config_path: Path) -> UvrConfig:
     """Load config without resolving inheritance (for showing inheritance chain)."""
     import sys
 
@@ -909,10 +909,10 @@ def _load_raw_config(config_path: Path) -> PtConfig:
     else:
         pt_data = raw_data
 
-    return PtConfig.model_validate(pt_data)
+    return UvrConfig.model_validate(pt_data)
 
 
-def _get_inheritance_chain(config: PtConfig, task_name: str) -> list[str]:
+def _get_inheritance_chain(config: UvrConfig, task_name: str) -> list[str]:
     """Get the inheritance chain for a task (from child to root ancestor)."""
     chain = [task_name]
     current = task_name
@@ -983,12 +983,12 @@ def check(config_path: Path | None) -> None:
         sys.exit(1)
 
 
-def _validate_config(config: PtConfig) -> list[str]:
+def _validate_config(config: UvrConfig) -> list[str]:
     """Perform enhanced validation of the configuration.
 
     Returns a list of warning/error messages.
     """
-    from pt.config import resolve_task_name
+    from uvr.config import resolve_task_name
 
     issues: list[str] = []
 
@@ -999,17 +999,13 @@ def _validate_config(config: PtConfig) -> list[str]:
             try:
                 resolve_task_name(config, dep_name)
             except ValueError:
-                issues.append(
-                    f"[error] Task '{task_name}' depends on unknown task '{dep_name}'"
-                )
+                issues.append(f"[error] Task '{task_name}' depends on unknown task '{dep_name}'")
 
     # Validate extend references (already checked during load, but double-check)
     raw_tasks = config.tasks
     for task_name, task in raw_tasks.items():
         if task.extend and task.extend not in raw_tasks:
-            issues.append(
-                f"[error] Task '{task_name}' extends unknown task '{task.extend}'"
-            )
+            issues.append(f"[error] Task '{task_name}' extends unknown task '{task.extend}'")
 
     # Validate pipeline task references
     # Build set of valid task names and aliases for O(1) lookup
@@ -1038,9 +1034,7 @@ def _validate_config(config: PtConfig) -> list[str]:
         try:
             resolve_task_name(config, config.project.on_error_task)
         except ValueError:
-            issues.append(
-                f"[error] on_error_task '{config.project.on_error_task}' not found"
-            )
+            issues.append(f"[error] on_error_task '{config.project.on_error_task}' not found")
 
     # Validate dependency group references
     for task in config.tasks.values():
@@ -1073,9 +1067,7 @@ def _validate_config(config: PtConfig) -> list[str]:
 
     unused_groups = set(config.dependencies.keys()) - used_groups
     if unused_groups:
-        issues.append(
-            f"[warn] Unused dependency groups: {', '.join(sorted(unused_groups))}"
-        )
+        issues.append(f"[warn] Unused dependency groups: {', '.join(sorted(unused_groups))}")
 
     # Warning: Variables defined but use_vars not enabled
     if config.variables and not config.project.use_vars:
@@ -1093,8 +1085,8 @@ def _validate_config(config: PtConfig) -> list[str]:
 @click.option("-f", "--force", is_flag=True, help="Overwrite existing config file")
 @handle_errors
 def init(force: bool) -> None:
-    """Initialize a new pt.toml configuration file."""
-    config_path = Path.cwd() / "pt.toml"
+    """Initialize a new uvr.toml configuration file."""
+    config_path = Path.cwd() / "uvr.toml"
 
     if config_path.exists() and not force:
         console.print(f"[yellow]Config file already exists:[/yellow] {config_path}")

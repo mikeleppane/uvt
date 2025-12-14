@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from pt.runner import Runner
+    from uvr.runner import Runner
 
 from rich.console import Console
 

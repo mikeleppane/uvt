@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, TextIO
 if TYPE_CHECKING:
     from pathlib import Path
 
-from pt.models import OutputMode
+from uvr.models import OutputMode
 
 
 @dataclass

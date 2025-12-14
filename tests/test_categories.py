@@ -3,12 +3,12 @@
 import textwrap
 from pathlib import Path
 
-from pt.config import load_config
+from uvr.config import load_config
 
 
 def test_category_field_basic(tmp_path: Path) -> None:
     """Test that category field can be set."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -26,7 +26,7 @@ def test_category_field_basic(tmp_path: Path) -> None:
 
 def test_category_optional(tmp_path: Path) -> None:
     """Test that category is optional."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -43,7 +43,7 @@ def test_category_optional(tmp_path: Path) -> None:
 
 def test_category_inheritance(tmp_path: Path) -> None:
     """Test that child tasks inherit category from parent."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -66,7 +66,7 @@ def test_category_inheritance(tmp_path: Path) -> None:
 
 def test_category_inheritance_override(tmp_path: Path) -> None:
     """Test that child can override parent's category."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -90,7 +90,7 @@ def test_category_inheritance_override(tmp_path: Path) -> None:
 
 def test_category_inheritance_chain(tmp_path: Path) -> None:
     """Test category inheritance through multiple levels."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -118,7 +118,7 @@ def test_category_inheritance_chain(tmp_path: Path) -> None:
 
 def test_get_tasks_by_category(tmp_path: Path) -> None:
     """Test filtering tasks by category."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -154,7 +154,7 @@ def test_get_tasks_by_category(tmp_path: Path) -> None:
 
 def test_get_tasks_by_category_empty(tmp_path: Path) -> None:
     """Test filtering by non-existent category."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -174,7 +174,7 @@ def test_get_tasks_by_category_empty(tmp_path: Path) -> None:
 
 def test_get_tasks_by_category_none(tmp_path: Path) -> None:
     """Test that tasks without category are not included."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -198,7 +198,7 @@ def test_get_tasks_by_category_none(tmp_path: Path) -> None:
 
 def test_get_all_categories(tmp_path: Path) -> None:
     """Test getting all categories with counts."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -233,7 +233,7 @@ def test_get_all_categories(tmp_path: Path) -> None:
 
 def test_get_all_categories_empty(tmp_path: Path) -> None:
     """Test getting categories when none are set."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -255,7 +255,7 @@ def test_get_all_categories_empty(tmp_path: Path) -> None:
 
 def test_category_with_tags(tmp_path: Path) -> None:
     """Test that category and tags work together."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]
@@ -277,7 +277,7 @@ def test_category_with_tags(tmp_path: Path) -> None:
 
 def test_multiple_categories_not_allowed(tmp_path: Path) -> None:
     """Test that category is a single string, not a list."""
-    config_file = tmp_path / "pt.toml"
+    config_file = tmp_path / "uvr.toml"
     config_file.write_text(
         textwrap.dedent("""
             [project]

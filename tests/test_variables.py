@@ -5,8 +5,8 @@ from textwrap import dedent
 
 import pytest
 
-from pt.config import apply_variable_interpolation, load_config
-from pt.variables import (
+from uvr.config import apply_variable_interpolation, load_config
+from uvr.variables import (
     VariableInterpolationError,
     interpolate_task_fields,
     interpolate_variables,
@@ -135,7 +135,7 @@ class TestConfigIntegration:
     """Integration tests with full config loading."""
 
     def test_load_config_with_variables(self, tmp_path: Path):
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -160,7 +160,7 @@ class TestConfigIntegration:
         assert config.tasks["lint"].cmd == "ruff check src"
 
     def test_per_task_opt_in(self, tmp_path: Path):
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [variables]
@@ -182,7 +182,7 @@ class TestConfigIntegration:
         assert config.tasks["without_vars"].cmd == "ls {dir}"  # Not interpolated
 
     def test_profile_variable_override(self, tmp_path: Path):
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -210,7 +210,7 @@ class TestConfigIntegration:
         assert config_prod.tasks["deploy"].cmd == "deploy --env production"
 
     def test_no_variables_no_interpolation(self, tmp_path: Path):
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [tasks.test]
@@ -225,7 +225,7 @@ class TestConfigIntegration:
         assert config.tasks["test"].cmd == "pytest {test_dir}"
 
     def test_complex_variable_substitution(self, tmp_path: Path):
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -253,7 +253,7 @@ class TestConfigIntegration:
         assert task.args == ["core", "-v"]
 
     def test_variable_in_cwd(self, tmp_path: Path):
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -275,7 +275,7 @@ class TestConfigIntegration:
 
     def test_escaped_braces(self, tmp_path: Path):
         """Test that double braces are properly escaped."""
-        config_file = tmp_path / "pt.toml"
+        config_file = tmp_path / "uvr.toml"
         config_file.write_text(
             dedent("""
             [project]

@@ -8,7 +8,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from pt.models import PtConfig, TaskConfig
+from uvr.models import TaskConfig, UvrConfig
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -26,14 +26,14 @@ class ConfigNotFoundError(ConfigError):
 
 # In-memory cache for parsed configs with mtime-based invalidation
 # Key: config file path, Value: (mtime, parsed config)
-_config_cache: dict[Path, tuple[float, PtConfig]] = {}
+_config_cache: dict[Path, tuple[float, UvrConfig]] = {}
 
 
 def find_config_file(start_dir: Path | None = None) -> Path:
     """Find the pt config file by walking up the directory tree.
 
     Searches for:
-    1. pt.toml (preferred)
+    1. uvr.toml (preferred)
     2. pyproject.toml with [tool.pt] section
 
     Args:
@@ -51,8 +51,8 @@ def find_config_file(start_dir: Path | None = None) -> Path:
     current = start_dir.resolve()
 
     while True:
-        # Check for pt.toml first
-        pt_toml = current / "pt.toml"
+        # Check for uvr.toml first
+        pt_toml = current / "uvr.toml"
         if pt_toml.is_file():
             return pt_toml
 
@@ -70,7 +70,7 @@ def find_config_file(start_dir: Path | None = None) -> Path:
 
     msg = (
         f"No pt configuration found. "
-        f"Create a pt.toml or add [tool.pt] to pyproject.toml. "
+        f"Create a uvr.toml or add [tool.pt] to pyproject.toml. "
         f"Searched from: {start_dir}"
     )
     raise ConfigNotFoundError(msg)
@@ -106,14 +106,14 @@ def _has_pt_config(pyproject_path: Path) -> bool:
         return False
 
 
-def load_config(config_path: Path | None = None) -> tuple[PtConfig, Path]:
+def load_config(config_path: Path | None = None) -> tuple[UvrConfig, Path]:
     """Load and validate pt configuration with mtime-based caching.
 
     Args:
         config_path: Explicit path to config file. If None, will search.
 
     Returns:
-        Tuple of (PtConfig, config_file_path).
+        Tuple of (UvrConfig, config_file_path).
 
     Raises:
         ConfigError: If config is invalid.
@@ -153,7 +153,7 @@ def load_config(config_path: Path | None = None) -> tuple[PtConfig, Path]:
         pt_data = raw_data
 
     try:
-        config = PtConfig.model_validate(pt_data)
+        config = UvrConfig.model_validate(pt_data)
     except ValidationError as e:
         msg = f"Invalid configuration in {config_path}:\n{_format_validation_errors(e)}"
         raise ConfigError(msg) from e
@@ -182,7 +182,7 @@ def get_project_root(config_path: Path) -> Path:
     return config_path.parent
 
 
-def resolve_task_inheritance(config: PtConfig) -> PtConfig:
+def resolve_task_inheritance(config: UvrConfig) -> UvrConfig:
     """Resolve task inheritance (extend field) for all tasks.
 
     Args:
@@ -249,7 +249,7 @@ def _merge_task_configs(parent: TaskConfig, child: TaskConfig) -> TaskConfig:
     - Merge args (parent + child)
     - Merge dicts (child overrides parent): env
     """
-    from pt.models import TaskConfig
+    from uvr.models import TaskConfig
 
     # Start with parent values, override with child where child has values
     merged_data: dict[str, Any] = {}
@@ -337,7 +337,7 @@ def resolve_path(path: str, project_root: Path) -> Path:
     return (project_root / p).resolve()
 
 
-def build_env(config: PtConfig, project_root: Path) -> dict[str, str]:
+def build_env(config: UvrConfig, project_root: Path) -> dict[str, str]:
     """Build environment variables dict from config.
 
     Handles PYTHONPATH specially by joining list values with os.pathsep.
@@ -396,14 +396,14 @@ def merge_env(
 
 
 def get_effective_profile(
-    config: PtConfig,
+    config: UvrConfig,
     profile_name: str | None = None,
 ) -> str | None:
     """Determine the effective profile to use.
 
     Priority:
     1. Explicitly passed profile_name
-    2. PT_PROFILE environment variable
+    2. UVR_PROFILE environment variable
     3. config.project.default_profile
 
     Args:
@@ -418,7 +418,7 @@ def get_effective_profile(
     if profile_name:
         return profile_name
 
-    env_profile = os.environ.get("PT_PROFILE")
+    env_profile = os.environ.get("UVR_PROFILE")
     if env_profile:
         return env_profile
 
@@ -426,7 +426,7 @@ def get_effective_profile(
 
 
 def build_profile_env(
-    config: PtConfig,
+    config: UvrConfig,
     project_root: Path,
     profile_name: str | None = None,
 ) -> dict[str, str]:
@@ -446,7 +446,7 @@ def build_profile_env(
     Returns:
         Merged environment dictionary.
     """
-    from pt.dotenv import load_env_files
+    from uvr.dotenv import load_env_files
 
     result: dict[str, str] = {}
 
@@ -476,7 +476,7 @@ def build_profile_env(
 
 
 def get_profile_python(
-    config: PtConfig,
+    config: UvrConfig,
     profile_name: str | None = None,
 ) -> str | None:
     """Get the Python version to use, considering profile override.
@@ -498,7 +498,7 @@ def get_profile_python(
 
 
 def get_profile_dependencies(
-    config: PtConfig,
+    config: UvrConfig,
     profile_name: str | None = None,
 ) -> dict[str, list[str]]:
     """Get dependency groups, with profile overrides applied.
@@ -522,7 +522,7 @@ def get_profile_dependencies(
     return result
 
 
-def resolve_task_name(config: PtConfig, name_or_alias: str) -> str:
+def resolve_task_name(config: UvrConfig, name_or_alias: str) -> str:
     """Resolve task alias to canonical task name.
 
     Args:
@@ -558,7 +558,7 @@ def resolve_task_name(config: PtConfig, name_or_alias: str) -> str:
 
 
 def get_effective_runner(
-    config: PtConfig,
+    config: UvrConfig,
     task: TaskConfig,
     profile_name: str | None = None,
 ) -> str | None:
@@ -592,9 +592,9 @@ def get_effective_runner(
 
 
 def apply_variable_interpolation(
-    config: PtConfig,
+    config: UvrConfig,
     profile_name: str | None = None,
-) -> PtConfig:
+) -> UvrConfig:
     """Apply variable interpolation to all tasks that have use_vars enabled.
 
     Args:
@@ -604,7 +604,7 @@ def apply_variable_interpolation(
     Returns:
         New config with interpolated task values
     """
-    from pt.variables import interpolate_task_fields, merge_variables
+    from uvr.variables import interpolate_task_fields, merge_variables
 
     # Merge global and profile variables
     profile = config.get_profile(profile_name)

@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 from rich.console import Console
 
-from pt.condition_evaluator import ConditionEvaluator
-from pt.config import (
+from uvr.condition_evaluator import ConditionEvaluator
+from uvr.config import (
     build_profile_env,
     get_profile_python,
     get_project_root,
@@ -20,16 +20,16 @@ from pt.config import (
     merge_env,
     resolve_path,
 )
-from pt.executor import ExecutionResult, UvCommand, execute_async, execute_sync
-from pt.graph import build_pipeline_graph, build_task_graph
-from pt.models import OnFailure, OutputMode, PtConfig, TaskConfig
-from pt.parallel import (
+from uvr.executor import ExecutionResult, UvCommand, execute_async, execute_sync
+from uvr.graph import build_pipeline_graph, build_task_graph
+from uvr.models import OnFailure, OutputMode, TaskConfig, UvrConfig
+from uvr.parallel import (
     ParallelExecutor,
     SequentialExecutor,
     print_results_summary,
     print_task_output,
 )
-from pt.script_meta import merge_dependencies, parse_script_metadata
+from uvr.script_meta import merge_dependencies, parse_script_metadata
 
 
 def _detect_ci_environment() -> bool:
@@ -83,7 +83,7 @@ def _get_git_info() -> tuple[str | None, str | None]:
 class Runner:
     """Main task runner that coordinates task execution."""
 
-    config: PtConfig
+    config: UvrConfig
     project_root: Path
     config_path: Path
     console: Console = field(default_factory=Console)
@@ -107,7 +107,7 @@ class Runner:
         Returns:
             Configured Runner instance.
         """
-        from pt.config import apply_variable_interpolation, get_effective_profile
+        from uvr.config import apply_variable_interpolation, get_effective_profile
 
         config, path = load_config(config_path)
 
@@ -180,7 +180,7 @@ class Runner:
             cwd = resolve_path(task.cwd, self.project_root)
 
         # Get effective runner
-        from pt.config import get_effective_runner
+        from uvr.config import get_effective_runner
 
         runner = get_effective_runner(self.config, task, self.profile)
 
@@ -214,33 +214,33 @@ class Runner:
         env: dict[str, str] = {}
 
         # Essential variables
-        env["PT_TASK_NAME"] = task_name
-        env["PT_PROJECT_ROOT"] = str(self.project_root)
-        env["PT_CONFIG_FILE"] = str(self.config_path)
+        env["UVR_TASK_NAME"] = task_name
+        env["UVR_PROJECT_ROOT"] = str(self.project_root)
+        env["UVR_CONFIG_FILE"] = str(self.config_path)
 
         # Profile
         if self.profile:
-            env["PT_PROFILE"] = self.profile
+            env["UVR_PROFILE"] = self.profile
 
         # Python version
         python_version = task.python or self.config.project.python
         if python_version:
-            env["PT_PYTHON_VERSION"] = python_version
+            env["UVR_PYTHON_VERSION"] = python_version
 
         # Tags
         if task.tags:
-            env["PT_TAGS"] = ",".join(sorted(task.tags))
+            env["UVR_TAGS"] = ",".join(sorted(task.tags))
 
         # CI detection
         if _detect_ci_environment():
-            env["PT_CI"] = "true"
+            env["UVR_CI"] = "true"
 
         # Git info (best effort)
         git_branch, git_commit = _get_git_info()
         if git_branch:
-            env["PT_GIT_BRANCH"] = git_branch
+            env["UVR_GIT_BRANCH"] = git_branch
         if git_commit:
-            env["PT_GIT_COMMIT"] = git_commit
+            env["UVR_GIT_COMMIT"] = git_commit
 
         return env
 
@@ -303,14 +303,14 @@ class Runner:
 
         # Build environment for hook with hook-specific variables
         hook_extra_env = {
-            "PT_TASK_NAME": task_name,
-            "PT_HOOK_TYPE": hook_type,
-            "PT_TASK_EXIT_CODE": str(task_exit_code),
+            "UVR_TASK_NAME": task_name,
+            "UVR_HOOK_TYPE": hook_type,
+            "UVR_TASK_EXIT_CODE": str(task_exit_code),
         }
         env = self._build_task_environment(task, extra_env=hook_extra_env)
 
         # Get effective runner for hooks (they inherit from task)
-        from pt.config import get_effective_runner
+        from uvr.config import get_effective_runner
 
         runner = get_effective_runner(self.config, task, self.profile)
 
@@ -455,9 +455,9 @@ class Runner:
 
         # Build error context env vars
         error_env = {
-            "PT_FAILED_TASK": failed_task_name,
-            "PT_ERROR_CODE": str(error_code),
-            "PT_ERROR_STDERR": stderr,
+            "UVR_FAILED_TASK": failed_task_name,
+            "UVR_ERROR_CODE": str(error_code),
+            "UVR_ERROR_STDERR": stderr,
         }
 
         # Execute error handler (ignore its result)
@@ -518,9 +518,9 @@ class Runner:
 
         # Build error context env vars
         error_env = {
-            "PT_FAILED_TASK": failed_task_name,
-            "PT_ERROR_CODE": str(error_code),
-            "PT_ERROR_STDERR": stderr,
+            "UVR_FAILED_TASK": failed_task_name,
+            "UVR_ERROR_CODE": str(error_code),
+            "UVR_ERROR_STDERR": stderr,
         }
 
         # Execute error handler (ignore its result)
