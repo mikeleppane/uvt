@@ -154,3 +154,6 @@ cython_debug/
 
 # Windows Zone.Identifier files
 *:Zone.Identifier
+
+# ruff
+.ruff_cache
