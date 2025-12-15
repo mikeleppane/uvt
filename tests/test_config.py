@@ -20,8 +20,8 @@ from uvtx.models import UvrConfig
 class TestFindConfigFile:
     """Tests for find_config_file function."""
 
-    def test_find_pt_toml(self, tmp_path: Path) -> None:
-        config_file = tmp_path / "uvt.toml"
+    def test_find_uvtx_toml(self, tmp_path: Path) -> None:
+        config_file = tmp_path / "uvtx.toml"
         config_file.write_text("[project]\nname = 'test'")
 
         result = find_config_file(tmp_path)
@@ -29,23 +29,23 @@ class TestFindConfigFile:
 
     def test_find_pyproject_toml(self, tmp_path: Path) -> None:
         config_file = tmp_path / "pyproject.toml"
-        config_file.write_text("[tool.pt]\n")
+        config_file.write_text("[tool.uvtx]\n")
 
         result = find_config_file(tmp_path)
         assert result == config_file
 
-    def test_prefer_pt_toml(self, tmp_path: Path) -> None:
-        pt_toml = tmp_path / "uvt.toml"
-        pt_toml.write_text("[project]")
+    def test_prefer_uvtx_toml(self, tmp_path: Path) -> None:
+        uvtx_toml = tmp_path / "uvtx.toml"
+        uvtx_toml.write_text("[project]")
 
         pyproject = tmp_path / "pyproject.toml"
-        pyproject.write_text("[tool.pt]")
+        pyproject.write_text("[tool.uvtx]")
 
         result = find_config_file(tmp_path)
-        assert result == pt_toml
+        assert result == uvtx_toml
 
     def test_find_in_parent(self, tmp_path: Path) -> None:
-        config_file = tmp_path / "uvt.toml"
+        config_file = tmp_path / "uvtx.toml"
         config_file.write_text("[project]")
 
         subdir = tmp_path / "subdir" / "nested"
@@ -55,7 +55,7 @@ class TestFindConfigFile:
         assert result == config_file
 
     def test_not_found(self, tmp_path: Path) -> None:
-        with pytest.raises(ConfigNotFoundError, match="No pt configuration found"):
+        with pytest.raises(ConfigNotFoundError, match="No uvtx configuration found"):
             find_config_file(tmp_path)
 
     def test_pyproject_without_tool_pyr(self, tmp_path: Path) -> None:
@@ -69,8 +69,8 @@ class TestFindConfigFile:
 class TestLoadConfig:
     """Tests for load_config function."""
 
-    def test_load_pyr_toml(self, tmp_path: Path) -> None:
-        config_file = tmp_path / "pyr.toml"
+    def test_load_uvtx_toml(self, tmp_path: Path) -> None:
+        config_file = tmp_path / "uvtx.toml"
         config_file.write_text(
             dedent("""
             [project]
@@ -97,8 +97,8 @@ class TestLoadConfig:
             [project]
             name = "my-package"
 
-            [tool.pyr]
-            [tool.pyr.tasks.test]
+            [tool.uvtx]
+            [tool.uvtx.tasks.test]
             cmd = "pytest"
         """)
         )
@@ -108,14 +108,14 @@ class TestLoadConfig:
         assert "test" in config.tasks
 
     def test_invalid_toml(self, tmp_path: Path) -> None:
-        config_file = tmp_path / "pyr.toml"
+        config_file = tmp_path / "uvtx.toml"
         config_file.write_text("invalid = [")
 
         with pytest.raises(ConfigError, match="Invalid TOML"):
             load_config(config_file)
 
     def test_invalid_config_schema(self, tmp_path: Path) -> None:
-        config_file = tmp_path / "pyr.toml"
+        config_file = tmp_path / "uvtx.toml"
         config_file.write_text(
             dedent("""
             [tasks.invalid]

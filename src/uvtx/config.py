@@ -33,8 +33,8 @@ def find_config_file(start_dir: Path | None = None) -> Path:
     """Find the pt config file by walking up the directory tree.
 
     Searches for:
-    1. uvt.toml (preferred)
-    2. pyproject.toml with [tool.pt] section
+    1. uvtx.toml (preferred)
+    2. pyproject.toml with [tool.uvtx] section
 
     Args:
         start_dir: Directory to start searching from. Defaults to cwd.
@@ -51,12 +51,12 @@ def find_config_file(start_dir: Path | None = None) -> Path:
     current = start_dir.resolve()
 
     while True:
-        # Check for uvt.toml first
-        pt_toml = current / "uvt.toml"
-        if pt_toml.is_file():
-            return pt_toml
+        # Check for uvtx.toml
+        uvtx_toml = current / "uvtx.toml"
+        if uvtx_toml.is_file():
+            return uvtx_toml
 
-        # Check for pyproject.toml with [tool.pt]
+        # Check for pyproject.toml with [tool.uvtx]
         pyproject = current / "pyproject.toml"
         if pyproject.is_file() and _has_pt_config(pyproject):
             return pyproject
@@ -69,19 +69,19 @@ def find_config_file(start_dir: Path | None = None) -> Path:
         current = parent
 
     msg = (
-        f"No pt configuration found. "
-        f"Create a uvt.toml or add [tool.pt] to pyproject.toml. "
+        f"No uvtx configuration found. "
+        f"Create a uvtx.toml or add [tool.uvtx] to pyproject.toml. "
         f"Searched from: {start_dir}"
     )
     raise ConfigNotFoundError(msg)
 
 
 def _has_pt_config(pyproject_path: Path) -> bool:
-    """Check if pyproject.toml contains [tool.pt] section.
+    """Check if pyproject.toml contains [tool.uvtx] section.
 
     Fast path: Scan first ~100 lines for section headers before full TOML parse.
     This avoids parsing large pyproject.toml files (1000+ lines) just to check
-    if [tool.pt] section exists.
+    if [tool.uvtx] section exists.
     """
     try:
         # Fast path: scan for section headers without parsing
@@ -90,18 +90,18 @@ def _has_pt_config(pyproject_path: Path) -> bool:
                 if i > 100:  # Only check first ~100 lines
                     break
                 stripped = line.strip()
-                # Check for [tool.pt] or [tool.pyr] (backward compat)
-                if stripped in ("[tool.pt]", "[tool.pyr]"):
+                # Check for [tool.uvtx]
+                if stripped == "[tool.uvtx]":
                     return True
-                # Also check for subsections like [tool.pt.tasks]
-                if stripped.startswith(("[tool.pt.", "[tool.pyr.")):
+                # Also check for subsections like [tool.uvtx.tasks]
+                if stripped.startswith("[tool.uvtx."):
                     return True
 
         # Fallback: full TOML parse if section might be deeper in file
         # (rare but possible if file has many comments/blank lines at top)
         with pyproject_path.open("rb") as f:
             data = tomllib.load(f)
-        return "tool" in data and ("pt" in data["tool"] or "pyr" in data["tool"])
+        return "tool" in data and "uvtx" in data["tool"]
     except (OSError, tomllib.TOMLDecodeError):
         return False
 
@@ -146,14 +146,14 @@ def load_config(config_path: Path | None = None) -> tuple[UvrConfig, Path]:
         msg = f"Invalid TOML in config file: {config_path}\n{e}"
         raise ConfigError(msg) from e
 
-    # Extract pyr config from pyproject.toml if needed
+    # Extract uvtx config from pyproject.toml if needed
     if config_path.name == "pyproject.toml":
-        pt_data = raw_data.get("tool", {}).get("pyr", {})
+        uvtx_data = raw_data.get("tool", {}).get("uvtx", {})
     else:
-        pt_data = raw_data
+        uvtx_data = raw_data
 
     try:
-        config = UvrConfig.model_validate(pt_data)
+        config = UvrConfig.model_validate(uvtx_data)
     except ValidationError as e:
         msg = f"Invalid configuration in {config_path}:\n{_format_validation_errors(e)}"
         raise ConfigError(msg) from e

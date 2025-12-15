@@ -104,6 +104,13 @@ class TaskConfig(BaseModel):
     stdout: str | None = None  # "null", "inherit", or file path for stdout
     stderr: str | None = None  # "null", "inherit", or file path for stderr
 
+    # Retry logic
+    max_retries: int = Field(default=0, ge=0, le=10)  # Max retry attempts (0 = no retry)
+    retry_backoff: float = Field(default=1.0, ge=0, le=60)  # Initial backoff delay in seconds
+    retry_on_exit_codes: list[int] = Field(
+        default_factory=list
+    )  # Retry only on these exit codes (empty = retry on any failure)
+
     @field_validator("tags")
     @classmethod
     def validate_tags(cls, v: list[str]) -> list[str]:

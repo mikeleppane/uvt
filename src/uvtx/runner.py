@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import time
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -539,6 +540,63 @@ class Runner:
             if self.verbose:
                 self.console.print(f"[yellow]Warning:[/yellow] Error handler raised exception: {e}")
 
+    def _execute_with_retry(
+        self, task: TaskConfig, task_name: str, command: UvCommand
+    ) -> ExecutionResult:
+        """Execute a command with exponential backoff retry logic.
+
+        Args:
+            task: The task configuration with retry settings
+            task_name: Name of the task (for logging)
+            command: The command to execute
+
+        Returns:
+            ExecutionResult from the final attempt
+        """
+        max_attempts = task.max_retries + 1  # +1 for initial attempt
+
+        for attempt in range(max_attempts):
+            result = execute_sync(command, capture_output=not self.verbose, timeout=task.timeout)
+
+            # Success - return immediately
+            if result.success:
+                if attempt > 0 and self.verbose:
+                    self.console.print(
+                        f"[green]✓ Task '{task_name}' succeeded on attempt {attempt + 1}[/green]"
+                    )
+                return result
+
+            # Check if we should retry
+            should_retry = attempt < task.max_retries
+            if should_retry:
+                # Check if we should retry based on exit code
+                if task.retry_on_exit_codes and result.return_code not in task.retry_on_exit_codes:
+                    if self.verbose:
+                        self.console.print(
+                            f"[yellow]Task '{task_name}' failed with exit code "
+                            f"{result.return_code} (not in retry_on_exit_codes)[/yellow]"
+                        )
+                    return result
+
+                # Calculate delay with exponential backoff
+                delay = task.retry_backoff * (2**attempt)
+                self.console.print(
+                    f"[yellow]Task '{task_name}' failed (attempt {attempt + 1}/{max_attempts}). "
+                    f"Retrying in {delay:.1f}s...[/yellow]"
+                )
+                time.sleep(delay)
+            else:
+                # No more retries
+                if task.max_retries > 0:
+                    self.console.print(
+                        f"[red]✗ Task '{task_name}' failed after {max_attempts} "
+                        f"attempt{'s' if max_attempts > 1 else ''}[/red]"
+                    )
+                return result
+
+        # Should never reach here, but return last result as fallback
+        return result
+
     def run_task(
         self,
         task_name: str,
@@ -594,7 +652,8 @@ class Runner:
         if self.verbose:
             self.console.print(f"[dim]Running: {' '.join(command.build())}[/dim]")
 
-        result = execute_sync(command, capture_output=not self.verbose, timeout=task.timeout)
+        # Execute with retry logic if configured
+        result = self._execute_with_retry(task, task_name, command)
 
         if self.verbose or not result.success:
             print_task_output(task_name, result, self.console)

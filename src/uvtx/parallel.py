@@ -192,18 +192,62 @@ class SequentialExecutor:
         """
         results: dict[str, ExecutionResult] = {}
 
-        for name in task_names:
-            self.console.print(f"[cyan]Running:[/cyan] {name}")
-            result = await executor(name, None)
-            results[name] = result
+        # Use progress bar for multiple tasks
+        if len(task_names) > 1:
+            progress = Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(),
+                TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+                console=self.console,
+            )
 
-            if result.success:
-                self.console.print(f"[green]✓[/green] {name}")
-            else:
-                self.console.print(f"[red]✗[/red] {name}")
-                if result.stderr:
-                    self.console.print(result.stderr, style="red")
-                break
+            with progress:
+                overall_task = progress.add_task(
+                    f"[cyan]Running {len(task_names)} tasks...",
+                    total=len(task_names),
+                )
+
+                for idx, name in enumerate(task_names, 1):
+                    progress.update(
+                        overall_task,
+                        description=f"[cyan]Running {name} ({idx}/{len(task_names)})...",
+                    )
+                    result = await executor(name, None)
+                    results[name] = result
+
+                    if result.success:
+                        progress.update(
+                            overall_task,
+                            description=f"[green]✓ {name} ({idx}/{len(task_names)})",
+                            advance=1,
+                        )
+                    else:
+                        progress.update(
+                            overall_task,
+                            description=f"[red]✗ {name} ({idx}/{len(task_names)})",
+                            advance=1,
+                        )
+                        if result.stderr:
+                            self.console.print(result.stderr, style="red")
+                        break
+
+                    # Small delay to show the completed state
+                    await asyncio.sleep(0.1)
+        else:
+            # Single task - use simple output
+            for name in task_names:
+                self.console.print(f"[cyan]Running:[/cyan] {name}")
+                result = await executor(name, None)
+                results[name] = result
+
+                if result.success:
+                    self.console.print(f"[green]✓[/green] {name}")
+                else:
+                    self.console.print(f"[red]✗[/red] {name}")
+                    if result.stderr:
+                        self.console.print(result.stderr, style="red")
+                    break
 
         return results
 

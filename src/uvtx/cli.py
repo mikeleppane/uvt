@@ -1,4 +1,4 @@
-"""CLI commands for pt using click."""
+"""CLI commands for uvtx using click."""
 
 from __future__ import annotations
 
@@ -46,7 +46,7 @@ def handle_errors(func: Any) -> Any:
             return func(*args, **kwargs)
         except ConfigNotFoundError as e:
             console.print(f"[red]Error:[/red] {e}")
-            console.print("\n[dim]Run 'pt init' to create a configuration file.[/dim]")
+            console.print("\n[dim]Run 'uvtx init' to create a configuration file.[/dim]")
             sys.exit(1)
         except ConfigError as e:
             console.print(f"[red]Configuration error:[/red]\n{e}")
@@ -176,9 +176,9 @@ def _run_inline_task(
 
 
 @click.group()
-@click.version_option(version=__version__, prog_name="pt")
+@click.version_option(version=__version__, prog_name="uvtx")
 def main() -> None:
-    """pt - A Python task runner for Python scripts using uv."""
+    """uvtx - A Python task runner for Python scripts using uv."""
     pass
 
 
@@ -246,9 +246,9 @@ def run(
     Additional ARGS are passed to the task's script/command.
 
     Examples:
-        pt run test                                    # Run configured task
-        pt run --inline "pytest tests/"                # Inline command
-        pt run --inline "python script.py" --env DEBUG=1  # With env vars
+        uvtx run test                                    # Run configured task
+        uvtx run --inline "pytest tests/"                # Inline command
+        uvtx run --inline "python script.py" --env DEBUG=1  # With env vars
     """
     if not check_uv_installed():
         print_uv_not_installed_error()
@@ -1079,6 +1079,101 @@ def _validate_config(config: UvrConfig) -> list[str]:
             )
 
     return issues
+
+
+@main.command()
+@click.option(
+    "-f",
+    "--format",
+    "output_format",
+    type=click.Choice(["ascii", "dot", "mermaid"]),
+    default="ascii",
+    help="Output format (ascii, dot for Graphviz, mermaid)",
+)
+@click.option(
+    "-o",
+    "--output",
+    "output_file",
+    type=click.Path(path_type=Path),
+    help="Output file (default: stdout)",
+)
+@click.option(
+    "-c",
+    "--config",
+    "config_path",
+    type=click.Path(exists=True, path_type=Path),
+    help="Path to config file",
+)
+@click.argument("task_name", required=False, shell_complete=complete_task_name)
+@handle_errors
+def graph(
+    output_format: str,
+    output_file: Path | None,
+    config_path: Path | None,
+    task_name: str | None,
+) -> None:
+    """Visualize task dependency graph.
+
+    TASK_NAME is optional - if provided, shows only that task and its dependencies.
+    If omitted, shows the entire task graph.
+
+    Examples:
+        uvtx graph                    # Show all tasks (ASCII tree)
+        uvtx graph test               # Show 'test' task dependencies
+        uvtx graph --format dot       # Export as Graphviz DOT format
+        uvtx graph --format mermaid   # Export as Mermaid diagram
+        uvtx graph test -o graph.dot  # Save to file
+    """
+    from uvtx.formatters.graph import format_graph_ascii, format_graph_dot, format_graph_mermaid
+    from uvtx.graph import build_task_graph
+
+    config, _ = load_config(config_path)
+
+    # Build the task graph
+    if task_name:
+        # Verify task exists
+        try:
+            config.get_task(task_name)
+        except KeyError:
+            console.print(f"[red]Error:[/red] Task '{task_name}' not found")
+            sys.exit(1)
+
+        task_graph = build_task_graph(config, [task_name])
+    else:
+        # Build graph for all tasks by combining individual graphs
+        from uvtx.graph import TaskGraph
+
+        task_graph = TaskGraph()
+        for task_name_iter in config.tasks:
+            try:
+                partial_graph = build_task_graph(config, [task_name_iter])
+            except Exception:
+                # Skip tasks with issues (e.g., circular dependencies)
+                continue
+            # Merge into main graph
+            for node_name, node in partial_graph.nodes.items():
+                task_graph.add_node(node_name, node.config, node.args_override)
+            for from_task, to_tasks in partial_graph.edges.items():
+                for to_task in to_tasks:
+                    task_graph.add_edge(from_task, to_task)
+
+    # Format the graph
+    if output_format == "ascii":
+        output = format_graph_ascii(task_graph, task_name)
+    elif output_format == "dot":
+        output = format_graph_dot(task_graph, task_name)
+    elif output_format == "mermaid":
+        output = format_graph_mermaid(task_graph, task_name)
+    else:
+        console.print(f"[red]Error:[/red] Unknown format: {output_format}")
+        sys.exit(1)
+
+    # Output to file or stdout
+    if output_file:
+        output_file.write_text(output)
+        console.print(f"[green]Graph written to:[/green] {output_file}")
+    else:
+        console.print(output)
 
 
 @main.command()

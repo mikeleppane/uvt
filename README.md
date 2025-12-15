@@ -3,7 +3,7 @@
 [![CI](https://github.com/mikeleppane/uvtx/workflows/CI/badge.svg)](https://github.com/mikeleppane/uvtx/actions)
 [![PyPI](https://img.shields.io/pypi/v/uvtx.svg)](https://pypi.org/project/uvtx/)
 [![Python](https://img.shields.io/pypi/pyversions/uvtx.svg)](https://pypi.org/project/uvtx/)
-[![License](https://img.shields.io/pypi/l/uvtx.svg)](https://github.com/mikeleppane/uvtxx/blob/main/LICENSE)
+[![License](https://img.shields.io/pypi/l/uvtx.svg)](https://github.com/mikeleppane/uvtx/blob/main/LICENSE)
 [![codecov](https://codecov.io/gh/mikeleppane/uvtx/branch/main/graph/badge.svg)](https://codecov.io/gh/mikeleppane/uvtx)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 [![Type checked: mypy](https://img.shields.io/badge/type%20checked-mypy-blue.svg)](https://mypy-lang.org/)
@@ -51,6 +51,8 @@ uvtx solves the common pain points of running Python scripts:
 - 🏃 **Global runner prefix**: Automatically prepend commands (e.g., `dotenv run`, `docker exec`)
 - 📝 **Output redirection**: Send stdout/stderr to files or /dev/null
 - ⚡ **Inline tasks**: Run commands directly from CLI without config file
+- 🔄 **Retry logic**: Automatic retry with exponential backoff for flaky tasks
+- 📊 **Dependency visualization**: View task graphs in ASCII, DOT, or Mermaid formats
 
 ## Installation
 
@@ -79,7 +81,7 @@ uv tool install uvtx
 pip install uvtx
 
 # From source
-git clone https://github.com/mikeleppane/uvtxx
+git clone https://github.com/mikeleppane/uvtx
 cd uvtx
 uv pip install -e .
 ```
@@ -283,6 +285,107 @@ uvtx run --inline "python app.py"
 
 # Use specific profile
 uvtx run --inline "deploy.sh" --profile prod --env VERSION=2.0
+```
+
+### Retry Logic with Exponential Backoff
+
+Automatically retry failed tasks with configurable backoff for handling flaky operations (network calls, external services):
+
+```toml
+[tasks.deploy]
+cmd = "python deploy.py"
+max_retries = 3              # Retry up to 3 times (default: 0)
+retry_backoff = 2.0          # Initial backoff in seconds (default: 1.0)
+retry_on_exit_codes = [1, 124]  # Only retry on specific exit codes (default: retry on any failure)
+```
+
+**How it works:**
+- Failed tasks automatically retry with exponential backoff
+- Backoff doubles after each attempt: `2s → 4s → 8s`
+- Total attempts = `max_retries + 1` (initial attempt + retries)
+- Exit codes filter: only retry on specified codes (empty = retry on any failure)
+
+**Example output:**
+```bash
+$ uvtx run deploy
+Task 'deploy' failed (attempt 1/4). Retrying in 2.0s...
+Task 'deploy' failed (attempt 2/4). Retrying in 4.0s...
+✓ Task 'deploy' succeeded on attempt 3
+```
+
+**Configuration limits:**
+- `max_retries`: 0-10 (validates at config load time)
+- `retry_backoff`: 0-60 seconds
+- `retry_on_exit_codes`: list of integers (exit codes to retry on)
+
+**Use cases:**
+- Network operations (API calls, downloads)
+- External service interactions
+- Flaky CI tests
+- Database connections
+
+### Task Dependency Visualization
+
+Visualize task dependencies as graphs in multiple formats:
+
+```bash
+# ASCII tree (default) - shows all tasks
+uvtx graph
+
+# Show specific task and its dependencies
+uvtx graph test
+
+# Export as DOT format (Graphviz)
+uvtx graph --format dot
+
+# Export as Mermaid diagram
+uvtx graph --format mermaid
+
+# Save to file
+uvtx graph test --format dot -o task-graph.dot
+```
+
+**Output formats:**
+
+**ASCII (default):**
+```
+test
+├── lint
+│   └── format
+└── type-check
+```
+
+**DOT (Graphviz):**
+```dot
+digraph tasks {
+    rankdir=LR;
+    test -> lint;
+    test -> type_check;
+    lint -> format;
+}
+```
+
+**Mermaid:**
+```mermaid
+graph TD
+    test --> lint
+    test --> type_check
+    lint --> format
+```
+
+**Features:**
+- Detects and labels circular dependencies: `[CIRCULAR DEPENDENCY]`
+- Shows shared dependencies: `[already shown above]`
+- Filter by task: show only specific task and its dependencies
+- Export to files for documentation or visualization tools
+
+**Example with circular dependency:**
+```bash
+$ uvtx graph
+a
+└── b
+    └── c
+        └── a [CIRCULAR DEPENDENCY]
 ```
 
 ## Core Concepts
@@ -1306,13 +1409,13 @@ uvtx supports tab completion for Bash, Zsh, and Fish shells. Completions are con
 Add to `~/.bashrc`:
 
 ```bash
-eval "$(_PT_COMPLETE=bash_source uvtx)"
+eval "$(_UVTX_COMPLETE=bash_source uvtx)"
 ```
 
 Or install the completion file:
 
 ```bash
-_PT_COMPLETE=bash_source uvtx > ~/.local/share/bash-completion/completions/uvtx
+_UVTX_COMPLETE=bash_source uvtx > ~/.local/share/bash-completion/completions/uvtx
 ```
 
 ### Zsh
@@ -1320,20 +1423,20 @@ _PT_COMPLETE=bash_source uvtx > ~/.local/share/bash-completion/completions/uvtx
 Add to `~/.zshrc`:
 
 ```zsh
-eval "$(_PT_COMPLETE=zsh_source uvtx)"
+eval "$(_UVTX_COMPLETE=zsh_source uvtx)"
 ```
 
 Or install the completion file:
 
 ```zsh
-_PT_COMPLETE=zsh_source uvtx > ~/.zsh/completions/_pt
+_UVTX_COMPLETE=zsh_source uvtx > ~/.zsh/completions/_uvtx
 # Ensure ~/.zsh/completions is in your $fpath
 ```
 
 ### Fish
 
 ```fish
-_PT_COMPLETE=fish_source uvtx > ~/.config/fish/completions/uvtx.fish
+_UVTX_COMPLETE=fish_source uvtx > ~/.config/fish/completions/uvtx.fish
 ```
 
 ### Completion Features

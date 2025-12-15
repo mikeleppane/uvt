@@ -227,22 +227,63 @@ Then create a Pull Request on GitHub.
 
 ## Release Process
 
-Releases are automated via GitHub Actions:
+uvtx uses PyPI [Trusted Publishers](https://docs.pypi.org/trusted-publishers/) for secure, automated releases without API tokens.
 
-1. Update version in `src/uvtx/__init__.py`
-2. Update `CHANGELOG.md` (if exists)
-3. Create and push a tag:
+### Initial Setup (Maintainers Only)
 
-```bash
-git tag v0.2.0
-git push origin v0.2.0
-```
+Before the first release, maintainers must configure PyPI trusted publishing:
 
-4. GitHub Actions will:
-   - Run full test suite
-   - Build distributions
-   - Publish to PyPI (requires PyPI trusted publisher setup)
-   - Create GitHub release
+1. **Go to PyPI project settings**:
+   - <https://pypi.org/manage/project/uvtx/settings/publishing/> (after project creation)
+   - Or create the project first with a manual upload
+
+2. **Add a new Trusted Publisher**:
+   - Publisher: GitHub
+   - Owner: `mikeleppane`
+   - Repository name: `uvtx`
+   - Workflow name: `release.yml`
+   - Environment name: `release` (optional but recommended for additional protection)
+
+3. **Verify GitHub Actions permissions**:
+   - Ensure `.github/workflows/release.yml` has:
+
+     ```yaml
+     permissions:
+       id-token: write  # Required for PyPI trusted publishing
+       contents: write  # Required for creating releases
+     ```
+
+### Creating a Release
+
+1. **Update version and changelog**:
+
+   ```bash
+   # Update version in src/uvtx/__init__.py
+   __version__ = "0.2.0"
+
+   # Update CHANGELOG.md with release notes
+   ```
+
+2. **Create and push git tag**:
+
+   ```bash
+   git tag -a v0.2.0 -m "Release v0.2.0"
+   git push origin v0.2.0
+   ```
+
+3. **GitHub Actions will automatically**:
+   - Run full test suite on Python 3.10-3.13
+   - Check formatting, linting, and type hints
+   - Build source distribution and wheel
+   - Publish to PyPI via OIDC (no API tokens needed)
+   - Create GitHub release with auto-generated notes
+
+### Trusted Publishing Benefits
+
+- **No API tokens**: Eliminates risk of token leaks
+- **Automatic rotation**: OIDC tokens are short-lived
+- **Audit trail**: All releases tied to specific GitHub workflow runs
+- **Environment protection**: Optional review requirements before release
 
 ## Code of Conduct
 
